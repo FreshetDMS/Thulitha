@@ -39,7 +39,7 @@ public class SimulatedAnnealing {
 
         t *= coolingRate;
       } else {
-        
+
       }
     }
   }
