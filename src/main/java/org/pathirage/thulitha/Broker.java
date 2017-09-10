@@ -17,17 +17,20 @@ package org.pathirage.thulitha;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Broker implements Comparable<Broker> {
   private final int[] capacity;
   private final int[] remainingCapacity;
   private final List<Replica> replicas;
   private double size = 0;
+  private final String id;
 
   public Broker(int[] capacity) {
     this.capacity = capacity;
     this.remainingCapacity = capacity;
     this.replicas = new ArrayList<>();
+    this.id = UUID.randomUUID().toString();
   }
 
   public int[] getCapacity() {
@@ -52,6 +55,10 @@ public class Broker implements Comparable<Broker> {
 
   public int getDimensionCount(){
     return capacity.length;
+  }
+
+  public String getId() {
+    return id;
   }
 
   @Override

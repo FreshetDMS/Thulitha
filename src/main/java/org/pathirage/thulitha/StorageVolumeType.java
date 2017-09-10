@@ -56,8 +56,8 @@ public enum StorageVolumeType {
     return MODEL_IDENTIFIERS[ordinal()];
   }
 
-  public float getSizeMB() {
-    return SIZES[ordinal()];
+  public int getSizeMB() {
+    return new Float(SIZES[ordinal()]).intValue();
   }
 
   public int getIOPS(int iopSizeKB, int storageBWMB) {
