@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.pathirage.thulitha;
+package org.pathirage.thulitha.experiments;
 
 public class SimulatedAnnealing {
   public static double solve(int numberOfCities, double startingTemp, int numberOfIteration, double coolingRate) {
@@ -26,8 +26,8 @@ public class SimulatedAnnealing {
     System.out.println("Initial distance of travel: " + bestDistance);
     Travel bestSolution = travel;
     Travel currentSolution = bestSolution;
-
-    for (int i = 0; i < numberOfCities; i++) {
+    int i = 0;
+    for ( i = 0; i < numberOfIteration; i++) {
       if ( t > 0.1) {
         currentSolution.swapCities();
         double currentDistance = currentSolution.getDistance();
@@ -37,10 +37,20 @@ public class SimulatedAnnealing {
           currentSolution.revertSwap();
         }
 
-        t *= coolingRate;
+        t *= 1 - coolingRate;
       } else {
+        continue;
+      }
 
+      if (i % 100 == 0) {
+        System.out.println("Iteration #: " + i);
       }
     }
+
+    return bestDistance;
+  }
+
+  public static void main(String[] args) {
+    System.out.println("Best distance: " + SimulatedAnnealing.solve(20, 10000, 100000, 0.0003));
   }
 }

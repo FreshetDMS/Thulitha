@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.pathirage.thulitha;
+package org.pathirage.thulitha.experiments;
 
 import lombok.Data;
 
