@@ -61,16 +61,6 @@ public class WekaDecisionTrees {
     Evaluation evaluation = new Evaluation(trainingSet);
 
     model.buildClassifier(trainingSet);
-//    Instance i = new DenseInstance(4);
-////    FastVector vals = new ArrayList<>();
-////    vals.add("128k");
-////    vals.add("64k");
-////    i.setValue(new Attribute("id"), 40);
-////    i.setValue(new Attribute("blocksize", vals), "128k");
-////    i.setValue(new Attribute("writepct"), 35);
-////    i.setValue(new Attribute("leaders"), 2);
-////    i.setValue(new Attribute("follower"), 4);
-////    System.out.println(model.classifyInstance(i));
     evaluation.evaluateModel(model, testingSet);
 
     return evaluation;
@@ -98,7 +88,6 @@ public class WekaDecisionTrees {
     };
 
     for (int j = 0; j < models.length; j++) {
-      List predictions = new ArrayList();
       System.out.println("\n Model: " + models[j].getClass().getSimpleName());
       double rsquared = 0;
       double mae = 0;
@@ -160,10 +149,10 @@ public class WekaDecisionTrees {
   }
 
   public static void main(String[] args) throws Exception {
-//    WekaDecisionTrees w = new WekaDecisionTrees("hdd.arff");
-//    w.crossValidate();
-//    buildAndPersistDTModel("hdd.arff", "/Users/mpathira/Workspace/PhD/FreshetDMS/Thulitha/src/main/resources/models/hdd.model", 8);
-    verifyModel( "/Users/mpathira/Workspace/PhD/FreshetDMS/Thulitha/src/main/resources/models/hdd.model");
+    WekaDecisionTrees w = new WekaDecisionTrees("st1.arff");
+    w.crossValidate();
+//    buildAndPersistDTModel("st1.arff", "/Users/mpathira/Workspace/PhD/FreshetDMS/Thulitha/src/main/resources/models/st1.model", 10);
+//    verifyModel( "/Users/mpathira/Workspace/PhD/FreshetDMS/Thulitha/src/main/resources/models/st1.model");
   }
 
 }

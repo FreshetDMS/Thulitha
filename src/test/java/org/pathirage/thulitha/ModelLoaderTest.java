@@ -15,24 +15,23 @@
  */
 package org.pathirage.thulitha;
 
+import org.junit.Assert;
+import org.junit.Test;
 import weka.classifiers.Classifier;
-import weka.core.SerializationHelper;
+import weka.classifiers.trees.REPTree;
 
-class StoragePerfModel {
-  static Classifier hddPerfModel() {
-    return loadModelFromClassPath("models/hdd.model");
+public class ModelLoaderTest {
+  @Test
+  public void testLoadHDDModel() {
+    Classifier classifier = StoragePerfModel.hddPerfModel();
+    Assert.assertNotNull(classifier);
+    Assert.assertEquals(REPTree.class, classifier.getClass());
   }
 
-  static Classifier st1PerfModel() {
-    return loadModelFromClassPath("models/st1.model");
-  }
-
-  private static Classifier loadModelFromClassPath(String modelName) {
-    ClassLoader classLoader = StoragePerfModel.class.getClassLoader();
-    try {
-      return (Classifier) SerializationHelper.read(classLoader.getResourceAsStream(modelName));
-    } catch (Exception e) {
-      throw new RuntimeException("Could not load weka model.", e);
-    }
+  @Test
+  public void testLoadST1Model() {
+    Classifier classifier = StoragePerfModel.st1PerfModel();
+    Assert.assertNotNull(classifier);
+    Assert.assertEquals(REPTree.class, classifier.getClass());
   }
 }
