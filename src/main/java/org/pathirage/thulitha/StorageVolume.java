@@ -15,7 +15,7 @@
  */
 package org.pathirage.thulitha;
 
-public class StorageVolume {
+public class StorageVolume implements Comparable<StorageVolume>{
   private final String brokerId;
   private final StorageVolumeType type;
   private final CCInstanceType instanceType;
@@ -27,6 +27,7 @@ public class StorageVolume {
   private int[] capacity = new int[2];
   private int[] remaining = new int[2];
   private int[] totalItemSize = new int[2];
+  private double size = 0;
 
   public StorageVolume(String brokerId, StorageVolumeType type, CCInstanceType instanceType, int iopSizeKB) {
     this.brokerId = brokerId;
@@ -88,11 +89,32 @@ public class StorageVolume {
         numberOfLogs - numberOfLeaders);
   }
 
-  private int effectiveThroughput() {
+  public int effectiveThroughput() {
     return computeEffectiveIOPS() * iopSizeKB;
   }
 
-  private double hourlyCost() {
+  public double hourlyCost() {
     return type.getHourlyCost(totalItemSize[0] / (1024 * 1024), totalItemSize[0], iopSizeKB);
+  }
+
+  public int[] getRemaining() {
+    return remaining;
+  }
+
+  private int[] getCapacity() {
+    return capacity;
+  }
+
+  public int getNumberOfLogs() {
+    return numberOfLogs;
+  }
+
+  public void setSize(double size) {
+    this.size = size;
+  }
+
+  @Override
+  public int compareTo(StorageVolume o) {
+    return Double.compare(this.size, o.size);
   }
 }
