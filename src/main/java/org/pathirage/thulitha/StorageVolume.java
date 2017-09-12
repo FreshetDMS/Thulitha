@@ -15,6 +15,11 @@
  */
 package org.pathirage.thulitha;
 
+/**
+ * Dimensions
+ *  - size : 0
+ *  - iops : 1
+ */
 public class StorageVolume implements Comparable<StorageVolume>{
   private final String brokerId;
   private final StorageVolumeType type;
@@ -42,25 +47,26 @@ public class StorageVolume implements Comparable<StorageVolume>{
     this.totalItemSize[1] = 0; // IOPS
   }
 
-  public boolean addReplica(Replica replica, int readPercentage, boolean leader) {
-    // TODO: Hope considering total IOPS requirement not read IOPS and write IOPS is correct
+  public boolean addReplica(Replica replica, boolean leader) {
+    // We consider sum of storage bandwidth in and out since cloud has no concept of in IOPS vs out IOPS when
+    // allocating EBS like volumes
     if (isFeasible(replica)) {
       numberOfLogs += 1;
       if (leader) {
         numberOfLeaders += 1;
       }
 
-      if (readPercentage > 0) {
-        totalLeaderIO += replica.getDimension(1); // TODO: Make sure dimensions are correct
-        leaderReadIO += replica.getDimension(1) * (readPercentage / 100); // TODO: Make sure calculation is correct
+      if (replica.getReadPercentage() > 0) {
+        totalLeaderIO += replica.getDimension(2);
+        leaderReadIO += replica.getDimension(2) * (replica.getReadPercentage() / 100);
       }
 
-      totalItemSize[0] += replica.getDimension(2); // TODO: Verify for correct dimensions
-      totalItemSize[1] += replica.getDimension(1);
+      totalItemSize[0] += replica.getDimension(1);
+      totalItemSize[1] += Math.ceil(new Float(replica.getDimension(2)) / iopSizeKB); // TODO: figure out a  way to get rid of BW to IOPS conversion
 
       int effectiveIOPS = computeEffectiveIOPS();
       remaining[0] = type.getSizeMB() - totalItemSize[0];
-      remaining[1] = effectiveIOPS - totalItemSize[1];
+      remaining[1] = effectiveIOPS - totalItemSize[1]; // Since we are converting to IOPS 4 lines above this is correct
 
       capacity[1] = effectiveIOPS;
 

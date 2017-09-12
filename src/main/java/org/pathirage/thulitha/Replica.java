@@ -15,18 +15,33 @@
  */
 package org.pathirage.thulitha;
 
+/**
+ * Requirement dimensions
+ *  - ram : 0
+ *  - storage : 1
+ *  - storage bw : 2
+ *  - network in : 3
+ *  - network out : 4
+ */
 public class Replica implements Comparable<Replica> {
   private final String topic;
   private final int partition;
   private final int id;
   private final int[] requirements;
+  private final int readPercentage;
   private double size = -1;
 
-  public Replica(String topic, int partition, int id, int[] requirements) {
+  public Replica(String topic, int partition, int id, int ramRequirement, int storageRequirement, int storageBandwidthRequirement, int networkInRequirement, int networkOutRequirement, int readPercentage) {
     this.topic = topic;
     this.partition = partition;
     this.id = id;
-    this.requirements = requirements;
+    this.requirements = new int[]{ramRequirement, storageRequirement, storageBandwidthRequirement, networkInRequirement, networkOutRequirement};
+    this.readPercentage = readPercentage;
+
+  }
+
+  public int getReadPercentage() {
+    return readPercentage;
   }
 
   /**

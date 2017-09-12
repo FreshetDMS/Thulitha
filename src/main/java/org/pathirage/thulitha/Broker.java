@@ -15,10 +15,16 @@
  */
 package org.pathirage.thulitha;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+/**
+ * Capacity dimensions
+ *  - ram : 0
+ *  - storage : 1
+ *  - storage iops : 2 (item's storage bw requirements get converted to IOPS requirements)
+ *  - network in : 3
+ *  - network out : 4
+ */
 public class Broker implements Comparable<Broker> {
   private static final int MBS_TO_KB = 1024;
   private final int[] capacity; // {ram, storage size, storage iops, network in, network out}
@@ -29,6 +35,7 @@ public class Broker implements Comparable<Broker> {
   private final CCInstanceType instanceType;
   private final StorageVolumeType storageVolumeType;
   private final int iopSizeKB;
+  private int maxStorageVolumes = -1;
   private final List<StorageVolume> storageVolumes = new ArrayList<>();
 
   public Broker(CCInstanceType instanceType, StorageVolumeType storageVolumeType, int iopSizeKB) {
@@ -39,6 +46,7 @@ public class Broker implements Comparable<Broker> {
     this.remainingCapacity = this.capacity;
     this.replicas = new ArrayList<>();
     this.id = UUID.randomUUID().toString();
+    this.maxStorageVolumes = computeMaxVolumeCount();
     initializeStorageVolumes();
   }
 
@@ -47,15 +55,81 @@ public class Broker implements Comparable<Broker> {
   }
 
   private boolean insert(Replica replica) {
-    return false; // TODO: Fill this
+    StorageVolume storageVolume = selectStorageVolume(replica);
+    if (storageVolume == null) {
+      return false;
+    }
+
+    boolean leader = replica.getId() == 0; // Replica with id 0 is always the leader
+
+    storageVolume.addReplica(replica, leader);
+
+    allocateMoreStorageBinsIfNecessary();
+
+    // Updating broker remaining capacity except storage related remaining capacity
+    remainingCapacity[0] -= replica.getRequirements()[0];
+    remainingCapacity[3] -= replica.getRequirements()[3];
+    remainingCapacity[4] -= replica.getRequirements()[4];
+
+    // We should not expose all available storage capacity as remaining since replica's does not share storage volumes.
+    // So always use the remaining capacity of storage volume with largest remaining capacity
+    StorageVolume maxSV = getStorageVolumeWithMaxRemainingCapacity();
+    remainingCapacity[1] = maxSV.getRemaining()[0];
+    remainingCapacity[2] = maxSV.getRemaining()[1];
+
+    replicas.add(replica);
+
+    return true;
+  }
+
+  private StorageVolume getStorageVolumeWithMaxRemainingCapacity() {
+    Collections.sort(storageVolumes);
+    // sort storage volume in ascending order of remaining capacity and get the last one.
+    StorageVolume maxSv = storageVolumes.get(storageVolumes.size() - 1);
+
+    if (storageVolumes.size() < maxStorageVolumes) {
+      return new StorageVolume(id, storageVolumeType, instanceType, iopSizeKB);
+    } else {
+      return maxSv;
+    }
   }
 
   private boolean isFeasible(Replica replica) {
     return false; // TODO: Fill this
   }
 
-  private StorageVolume selectStorageVolume(int sizeRequirement, int iopsRequirements) {
-    return null;
+  private StorageVolume selectStorageVolume(Replica replica) {
+    Collections.sort(storageVolumes);
+    for (StorageVolume volume : storageVolumes) {
+      if (volume.isFeasible(replica)) {
+        return volume;
+      }
+    }
+
+    if (storageVolumes.size() < computeMaxVolumeCount()) {
+      storageVolumes.add(new StorageVolume(id, storageVolumeType, instanceType, iopSizeKB));
+    } else {
+      return null;
+    }
+
+    return selectStorageVolume(replica);
+  }
+
+  public void allocateMoreStorageBinsIfNecessary() {
+    if ((storageVolumeType != StorageVolumeType.D2HDD) && (storageVolumeType != StorageVolumeType.D2HDDSTATIC) &&
+        (storageVolumes.size() == maxStorageVolumes)) {
+      int effectiveThroughput = 0;
+      for (StorageVolume storageVolume : storageVolumes) {
+        effectiveThroughput += storageVolume.effectiveThroughput();
+      }
+
+      if (effectiveThroughput < instanceType.getStorageBWMB()) {
+        // TODO: What if the difference is too low. We may need to check storage bandwidth as well adding replica
+        // TODO: How about checking we have half the bandwidth of maximum volume bandwidth
+        storageVolumes.add(new StorageVolume(id, storageVolumeType, instanceType, iopSizeKB));
+        maxStorageVolumes += 1;
+      }
+    }
   }
 
   public int[] getCapacity() {
