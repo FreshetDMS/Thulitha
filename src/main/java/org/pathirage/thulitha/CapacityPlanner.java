@@ -35,7 +35,7 @@ public class CapacityPlanner {
     SizeUtility.updateReplicaSize(replicas, brokers);
     Collections.sort(brokers);
 
-    while(replicas.isEmpty()) {
+    while(!replicas.isEmpty()) {
       Replica largestReplica = Collections.max(replicas);
 
       if (dynamic) {

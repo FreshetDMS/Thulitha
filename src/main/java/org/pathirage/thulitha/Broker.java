@@ -106,7 +106,6 @@ public class Broker implements Comparable<Broker> {
   private boolean isFeasible(Replica replica) {
     for (int i = 0; i < replica.getDimensionCount(); i++) {
       if (replica.getDimension(i) > remainingCapacity[i]) {
-        log.info("");
         return false;
       }
     }

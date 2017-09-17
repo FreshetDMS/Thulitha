@@ -77,7 +77,7 @@ public class StorageVolume implements Comparable<StorageVolume>{
   }
 
   public boolean isFeasible(Replica replica) {
-    return replica.getDimension(1) < remaining[1] && replica.getDimension(2) < remaining[0];
+    return replica.getDimension(1) < remaining[0] && replica.getDimension(2) < remaining[1];
   }
 
   private int computeEffectiveIOPS() {
