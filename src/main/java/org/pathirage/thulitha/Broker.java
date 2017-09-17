@@ -15,6 +15,9 @@
  */
 package org.pathirage.thulitha;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 /**
@@ -26,6 +29,8 @@ import java.util.*;
  *  - network out : 4
  */
 public class Broker implements Comparable<Broker> {
+  private static final Logger log = LoggerFactory.getLogger(Broker.class);
+
   private static final int MBS_TO_KB = 1024;
   private final int[] capacity; // {ram, storage size, storage iops, network in, network out}
   private final int[] remainingCapacity;
@@ -48,6 +53,10 @@ public class Broker implements Comparable<Broker> {
     this.id = UUID.randomUUID().toString();
     this.maxStorageVolumes = computeMaxVolumeCount();
     initializeStorageVolumes();
+  }
+
+  public boolean isEmpty() {
+    return replicas.isEmpty();
   }
 
   public boolean add(Replica replica) {
@@ -95,7 +104,13 @@ public class Broker implements Comparable<Broker> {
   }
 
   private boolean isFeasible(Replica replica) {
-    return false; // TODO: Fill this
+    for (int i = 0; i < replica.getDimensionCount(); i++) {
+      if (replica.getDimension(i) > remainingCapacity[i]) {
+        log.info("");
+        return false;
+      }
+    }
+    return true;
   }
 
   private StorageVolume selectStorageVolume(Replica replica) {
@@ -138,6 +153,10 @@ public class Broker implements Comparable<Broker> {
 
   public int[] getRemainingCapacity() {
     return remainingCapacity;
+  }
+
+  public int getRemainingCapacity(int d) {
+    return remainingCapacity[d];
   }
 
   public List<Replica> getReplicas() {

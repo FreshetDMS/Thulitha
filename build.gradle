@@ -10,7 +10,8 @@ repositories {
 dependencies {
   compile 'org.slf4j:slf4j-api:1.7.21'
   compile 'nz.ac.waikato.cms.weka:weka-stable:3.8.1'
-  compileOnly "org.projectlombok:lombok:1.16.18"
+  compile 'ch.qos.logback:logback-classic:1.2.3'
+  compileOnly 'org.projectlombok:lombok:1.16.18'
   testCompile 'junit:junit:4.12'
 }
 
