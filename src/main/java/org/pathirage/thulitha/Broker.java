@@ -22,11 +22,11 @@ import java.util.*;
 
 /**
  * Capacity dimensions
- *  - ram : 0
- *  - storage : 1
- *  - storage iops : 2 (item's storage bw requirements get converted to IOPS requirements)
- *  - network in : 3
- *  - network out : 4
+ * - ram : 0
+ * - storage : 1
+ * - storage iops : 2 (item's storage bw requirements get converted to IOPS requirements)
+ * - network in : 3
+ * - network out : 4
  */
 public class Broker implements Comparable<Broker> {
   private static final Logger log = LoggerFactory.getLogger(Broker.class);
@@ -34,6 +34,7 @@ public class Broker implements Comparable<Broker> {
   private static final int MBS_TO_KB = 1024;
   private final int[] capacity; // {ram, storage size, storage iops, network in, network out}
   private final int[] remainingCapacity;
+  private final int[] totalSizeOfItems;
   private final List<Replica> replicas;
   private double size = 0;
   private final String id;
@@ -48,10 +49,11 @@ public class Broker implements Comparable<Broker> {
     this.storageVolumeType = storageVolumeType;
     this.iopSizeKB = iopSizeKB;
     this.capacity = computeInitialCapacity();
-    this.remainingCapacity = this.capacity;
+    this.remainingCapacity = this.capacity.clone();
     this.replicas = new ArrayList<>();
     this.id = UUID.randomUUID().toString();
     this.maxStorageVolumes = computeMaxVolumeCount();
+    this.totalSizeOfItems = new int[]{0, 0, 0, 0, 0};
     initializeStorageVolumes();
   }
 
@@ -75,6 +77,10 @@ public class Broker implements Comparable<Broker> {
 
     allocateMoreStorageBinsIfNecessary();
 
+    for (int i = 0; i < 5; i++) {
+      totalSizeOfItems[i] += replica.getRequirements()[i];
+    }
+
     // Updating broker remaining capacity except storage related remaining capacity
     remainingCapacity[0] -= replica.getRequirements()[0];
     remainingCapacity[3] -= replica.getRequirements()[3];
@@ -84,14 +90,16 @@ public class Broker implements Comparable<Broker> {
     // So always use the remaining capacity of storage volume with largest remaining capacity
     StorageVolume maxSV = getStorageVolumeWithMaxRemainingCapacity();
     remainingCapacity[1] = maxSV.getRemaining()[0];
-    remainingCapacity[2] = maxSV.getRemaining()[1];
+    remainingCapacity[2] = Math.min(maxSV.getRemaining()[1], ((instanceType.getStorageBWMB() * MBS_TO_KB) / iopSizeKB) - ((totalSizeOfItems[2] * MBS_TO_KB) / iopSizeKB));
+    capacity[1] = maxSV.getRemaining()[0];
+    capacity[2] = maxSV.getRemaining()[1];
 
     replicas.add(replica);
 
     return true;
   }
 
-  private StorageVolume getStorageVolumeWithMaxRemainingCapacity() {
+  public StorageVolume getStorageVolumeWithMaxRemainingCapacity() {
     Collections.sort(storageVolumes);
     // sort storage volume in ascending order of remaining capacity and get the last one.
     StorageVolume maxSv = storageVolumes.get(storageVolumes.size() - 1);
@@ -137,9 +145,7 @@ public class Broker implements Comparable<Broker> {
         effectiveThroughput += storageVolume.effectiveThroughput();
       }
 
-      if (effectiveThroughput < instanceType.getStorageBWMB()) {
-        // TODO: What if the difference is too low. We may need to check storage bandwidth as well adding replica
-        // TODO: How about checking we have half the bandwidth of maximum volume bandwidth
+      if ((effectiveThroughput / 1024.0) < instanceType.getStorageBWMB()) {
         storageVolumes.add(new StorageVolume(id, storageVolumeType, instanceType, iopSizeKB));
         maxStorageVolumes += 1;
       }
@@ -148,6 +154,14 @@ public class Broker implements Comparable<Broker> {
 
   public int[] getCapacity() {
     return capacity;
+  }
+
+  public int numberOfStorageVolumes() {
+    return storageVolumes.size();
+  }
+
+  public int getMaxStorageVolumes() {
+    return maxStorageVolumes;
   }
 
   public int[] getRemainingCapacity() {

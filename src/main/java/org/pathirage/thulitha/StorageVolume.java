@@ -41,8 +41,7 @@ public class StorageVolume implements Comparable<StorageVolume>{
     this.iopSizeKB = iopSizeKB;
     this.capacity[0] = type.getSizeMB();
     this.capacity[1] = type.getIOPS(iopSizeKB, instanceType.getStorageBWMB()); // IOPS
-    this.remaining[0] = this.capacity[0];
-    this.remaining[1] = this.capacity[1]; // IOPS
+    this.remaining = this.capacity.clone();
     this.totalItemSize[0] = 0;
     this.totalItemSize[1] = 0; // IOPS
   }
