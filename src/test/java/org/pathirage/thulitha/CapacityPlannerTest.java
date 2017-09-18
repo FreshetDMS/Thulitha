@@ -31,7 +31,7 @@ public class CapacityPlannerTest {
 
     CapacityPlanner cp = new CapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true);
     List<Broker> solution = cp.solve();
-    
+
     Assert.assertEquals(112, solution.size());
   }
 }

@@ -164,12 +164,28 @@ public class Broker implements Comparable<Broker> {
     return maxStorageVolumes;
   }
 
+  public CCInstanceType getInstanceType() {
+    return instanceType;
+  }
+
+  public StorageVolumeType getStorageVolumeType() {
+     return storageVolumeType;
+  }
+
+  public int getIopSizeKB(){
+    return iopSizeKB;
+  }
+
   public long[] getRemainingCapacity() {
     return remainingCapacity;
   }
 
   public long getRemainingCapacity(int d) {
     return remainingCapacity[d];
+  }
+
+  public long getTotalSizeOfItems(int d) {
+    return totalSizeOfItems[d];
   }
 
   public List<Replica> getReplicas() {

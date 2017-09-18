@@ -1,5 +1,6 @@
 package org.pathirage.thulitha;
 
+import org.pathirage.thulitha.utils.SizeUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
