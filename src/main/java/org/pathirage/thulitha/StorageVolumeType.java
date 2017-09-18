@@ -98,7 +98,7 @@ public enum StorageVolumeType {
     }
   }
 
-  public double getHourlyCost(int size, int provisionedIOPS, int iopSizeKB) {
+  public double getHourlyCost(long size, long provisionedIOPS, int iopSizeKB) {
     double dr = (iopSizeKB * provisionedIOPS) / 1024.0;
     double requiredSize = 0;
 
@@ -141,7 +141,7 @@ public enum StorageVolumeType {
     return HOURLY_COST_FACTOR * costFunction(size, provisionedIOPS);
   }
 
-  private double costFunction(int size, int provisionedIOPS) {
+  private double costFunction(long size, long provisionedIOPS) {
     if (this == IO1) {
       return 0.125 * size + 0.065 * provisionedIOPS;
     } else if (this == GP2) {

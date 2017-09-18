@@ -29,9 +29,9 @@ public class StorageVolume implements Comparable<StorageVolume>{
   private int numberOfLeaders = 0;
   private int totalLeaderIO = 0;
   private int leaderReadIO = 0;
-  private int[] capacity = new int[2];
-  private int[] remaining = new int[2];
-  private int[] totalItemSize = new int[2];
+  private long[] capacity = new long[2];
+  private long[] remaining = new long[2];
+  private long[] totalItemSize = new long[2];
   private double size = 0;
 
   public StorageVolume(String brokerId, StorageVolumeType type, CCInstanceType instanceType, int iopSizeKB) {
@@ -102,11 +102,11 @@ public class StorageVolume implements Comparable<StorageVolume>{
     return type.getHourlyCost(totalItemSize[0] / (1024 * 1024), totalItemSize[0], iopSizeKB);
   }
 
-  public int[] getRemaining() {
+  public long[] getRemaining() {
     return remaining;
   }
 
-  private int[] getCapacity() {
+  private long[] getCapacity() {
     return capacity;
   }
 

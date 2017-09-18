@@ -4,7 +4,7 @@ import java.util.List;
 
 public class SizeUtility {
   public static void updateBrokerSize(List<Broker> brokers) {
-    int[] totalRemaining = computeTotalRemaining(brokers);
+    long[] totalRemaining = computeTotalRemaining(brokers);
     float[] normalizationFactor = new float[totalRemaining.length];
 
     for (int i = 0; i < totalRemaining.length; i++) {
@@ -27,7 +27,7 @@ public class SizeUtility {
   }
 
   public static void updateReplicaSize(List<Replica> replicas, List<Broker> brokers) {
-    int[] totalRemaining = computeTotalRemaining(brokers);
+    long[] totalRemaining = computeTotalRemaining(brokers);
     float[] normalizationFactor = new float[totalRemaining.length];
 
     for (int i = 0; i < totalRemaining.length; i++) {
@@ -49,13 +49,13 @@ public class SizeUtility {
     }
   }
 
-  private static int[] computeTotalRemaining(List<Broker> brokers) {
+  private static long[] computeTotalRemaining(List<Broker> brokers) {
     if (brokers == null || brokers.isEmpty()) {
       throw new RuntimeException("No brokers");
     }
 
     int dimensions = brokers.get(0).getDimensionCount();
-    int[] totalRemaining = new int[dimensions];
+    long[] totalRemaining = new long[dimensions];
 
     for (int d = 0; d < dimensions; d++) {
       totalRemaining[d] = 0;
@@ -63,6 +63,9 @@ public class SizeUtility {
 
     for (Broker b : brokers) {
       for (int d = 0; d < dimensions; d++) {
+        if (b.getRemainingCapacity(d) < 0) {
+          throw new RuntimeException(String.format("Remaining capacity over dimension %s cannot be negative.", d));
+        }
         totalRemaining[d] += b.getRemainingCapacity(d);
       }
     }

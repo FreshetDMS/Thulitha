@@ -27,15 +27,15 @@ public class Replica implements Comparable<Replica> {
   private final String topic;
   private final int partition;
   private final int id;
-  private final int[] requirements;
+  private final long[] requirements;
   private final int readPercentage;
   private double size = -1;
 
-  public Replica(String topic, int partition, int id, int ramRequirement, int storageRequirement, int storageBandwidthRequirement, int networkInRequirement, int networkOutRequirement, int readPercentage) {
+  public Replica(String topic, int partition, int id, long ramRequirement, long storageRequirement, long storageBandwidthRequirement, long networkInRequirement, long networkOutRequirement, int readPercentage) {
     this.topic = topic;
     this.partition = partition;
     this.id = id;
-    this.requirements = new int[]{ramRequirement, storageRequirement, storageBandwidthRequirement, networkInRequirement, networkOutRequirement};
+    this.requirements = new long[]{ramRequirement, storageRequirement, storageBandwidthRequirement, networkInRequirement, networkOutRequirement};
     this.readPercentage = readPercentage;
 
   }
@@ -48,7 +48,7 @@ public class Replica implements Comparable<Replica> {
    * Get replica's resource requirements
    * @return resource requirements over all dimensions
    */
-  public int[] getRequirements() {
+  public long[] getRequirements() {
     return requirements;
   }
 
@@ -89,7 +89,7 @@ public class Replica implements Comparable<Replica> {
    * @param dimension dimension id
    * @return resource requirement
    */
-  public int getDimension(int dimension) {
+  public long getDimension(int dimension) {
     return requirements[dimension];
   }
 

@@ -32,9 +32,9 @@ public class Broker implements Comparable<Broker> {
   private static final Logger log = LoggerFactory.getLogger(Broker.class);
 
   private static final int MBS_TO_KB = 1024;
-  private final int[] capacity; // {ram, storage size, storage iops, network in, network out}
-  private final int[] remainingCapacity;
-  private final int[] totalSizeOfItems;
+  private final long[] capacity; // {ram, storage size, storage iops, network in, network out}
+  private final long[] remainingCapacity;
+  private final long[] totalSizeOfItems;
   private final List<Replica> replicas;
   private double size = 0;
   private final String id;
@@ -53,7 +53,7 @@ public class Broker implements Comparable<Broker> {
     this.replicas = new ArrayList<>();
     this.id = UUID.randomUUID().toString();
     this.maxStorageVolumes = computeMaxVolumeCount();
-    this.totalSizeOfItems = new int[]{0, 0, 0, 0, 0};
+    this.totalSizeOfItems = new long[]{0, 0, 0, 0, 0};
     initializeStorageVolumes();
   }
 
@@ -152,7 +152,7 @@ public class Broker implements Comparable<Broker> {
     }
   }
 
-  public int[] getCapacity() {
+  public long[] getCapacity() {
     return capacity;
   }
 
@@ -164,11 +164,11 @@ public class Broker implements Comparable<Broker> {
     return maxStorageVolumes;
   }
 
-  public int[] getRemainingCapacity() {
+  public long[] getRemainingCapacity() {
     return remainingCapacity;
   }
 
-  public int getRemainingCapacity(int d) {
+  public long getRemainingCapacity(int d) {
     return remainingCapacity[d];
   }
 
@@ -217,7 +217,7 @@ public class Broker implements Comparable<Broker> {
     return instanceType.getHourlyCost() + storageCost;
   }
 
-  private int[] computeInitialCapacity() {
+  private long[] computeInitialCapacity() {
     int maxIOPS;
     if (instanceType == CCInstanceType.D2_2X || instanceType == CCInstanceType.D2_4X ||
         instanceType == CCInstanceType.D2_8X) {
@@ -228,7 +228,7 @@ public class Broker implements Comparable<Broker> {
       maxIOPS = (instanceType.getStorageBWMB() * MBS_TO_KB) / iopSizeKB;
     }
 
-    return new int[]{instanceType.getRAMMB(), storageVolumeType.getSizeMB() * computeVolumeCount(), maxIOPS,
+    return new long[]{instanceType.getRAMMB(), storageVolumeType.getSizeMB() * computeVolumeCount(), maxIOPS,
         instanceType.getNetworkBWMB(), instanceType.getNetworkBWMB()}; // Assumes duplex network card.
   }
 
