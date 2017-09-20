@@ -25,7 +25,7 @@ public class ClusterBalancingTool {
   public List<Broker> balance(){
     // Run the capacity planner to get near optimal assignment
     List<Broker> nearOptimalAssignment =
-        new CapacityPlanner(replicas, instanceType, storageVolumeType, true).solve();
+        new BFDCapacityPlanner(replicas, instanceType, storageVolumeType, true).solve();
 
     // Add more brokers if needed based capacity planner output
     if (nearOptimalAssignment.size() > brokers.size()) {

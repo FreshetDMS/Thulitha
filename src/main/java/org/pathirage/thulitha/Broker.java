@@ -28,7 +28,7 @@ import java.util.*;
  * - network in : 3
  * - network out : 4
  */
-public class Broker implements Comparable<Broker> {
+public class Broker implements Comparable<Broker>, IBroker {
   private static final Logger log = LoggerFactory.getLogger(Broker.class);
 
   private static final int MBS_TO_KB = 1024;
@@ -43,6 +43,7 @@ public class Broker implements Comparable<Broker> {
   private final int iopSizeKB;
   private int maxStorageVolumes = -1;
   private final List<StorageVolume> storageVolumes = new ArrayList<>();
+  private final Set<String> partitions = new HashSet<>();
 
   public Broker(CCInstanceType instanceType, StorageVolumeType storageVolumeType, int iopSizeKB) {
     this.instanceType = instanceType;
@@ -95,6 +96,7 @@ public class Broker implements Comparable<Broker> {
     capacity[2] = maxSV.getRemaining()[1];
 
     replicas.add(replica);
+    partitions.add(replica.getTopicPartition());
 
     return true;
   }
@@ -112,6 +114,10 @@ public class Broker implements Comparable<Broker> {
   }
 
   private boolean isFeasible(Replica replica) {
+    if (partitions.contains(replica.getTopicPartition())) {
+      return false;
+    }
+
     for (int i = 0; i < replica.getDimensionCount(); i++) {
       if (replica.getDimension(i) > remainingCapacity[i]) {
         return false;
@@ -169,10 +175,10 @@ public class Broker implements Comparable<Broker> {
   }
 
   public StorageVolumeType getStorageVolumeType() {
-     return storageVolumeType;
+    return storageVolumeType;
   }
 
-  public int getIopSizeKB(){
+  public int getIopSizeKB() {
     return iopSizeKB;
   }
 

@@ -29,7 +29,7 @@ public class CapacityPlannerTest {
     replicas.addAll(t4.getReplicas());
     replicas.addAll(t5.getReplicas());
 
-    CapacityPlanner cp = new CapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true);
+    CapacityPlanner cp = new BFDCapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true);
     List<Broker> solution = cp.solve();
 
     Assert.assertEquals(112, solution.size());

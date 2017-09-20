@@ -68,6 +68,10 @@ public class Replica implements Comparable<Replica> {
     return partition;
   }
 
+  public String getTopicPartition() {
+    return String.format("%s:%s", topic, partition);
+  }
+
   /**
    * Get the replica identifier
    * @return replica identifier
