@@ -309,4 +309,8 @@ public class Broker implements Comparable<Broker> {
   public double getNetworkOutBWUtilization() {
     return 0.0;
   }
+
+  public int getReplicaCount() {
+    return replicas.size();
+  }
 }
