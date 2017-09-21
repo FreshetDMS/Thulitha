@@ -297,4 +297,16 @@ public class Broker implements Comparable<Broker> {
           storageVolumeType.getIOPS(iopSizeKB, instanceType.getStorageBWMB()))).intValue();
     }
   }
+
+  public double getStorageBWUtilization() {
+    return 0.0;
+  }
+
+  public double getNetworkInBWUtilization() {
+    return 0.0;
+  }
+
+  public double getNetworkOutBWUtilization() {
+    return 0.0;
+  }
 }
