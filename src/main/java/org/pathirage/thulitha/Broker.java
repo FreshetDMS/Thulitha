@@ -28,7 +28,7 @@ import java.util.*;
  * - network in : 3
  * - network out : 4
  */
-public class Broker implements Comparable<Broker>, IBroker {
+public class Broker implements Comparable<Broker> {
   private static final Logger log = LoggerFactory.getLogger(Broker.class);
 
   private static final int MBS_TO_KB = 1024;
@@ -44,11 +44,17 @@ public class Broker implements Comparable<Broker>, IBroker {
   private int maxStorageVolumes = -1;
   private final List<StorageVolume> storageVolumes = new ArrayList<>();
   private final Set<String> partitions = new HashSet<>();
+  private final boolean dumb;
 
   public Broker(CCInstanceType instanceType, StorageVolumeType storageVolumeType, int iopSizeKB) {
+    this(instanceType, storageVolumeType, iopSizeKB, false);
+  }
+
+  public Broker(CCInstanceType instanceType, StorageVolumeType storageVolumeType, int iopSizeKB, boolean dumb) {
     this.instanceType = instanceType;
     this.storageVolumeType = storageVolumeType;
     this.iopSizeKB = iopSizeKB;
+    this.dumb = dumb;
     this.capacity = computeInitialCapacity();
     this.remainingCapacity = this.capacity.clone();
     this.replicas = new ArrayList<>();
@@ -67,16 +73,26 @@ public class Broker implements Comparable<Broker>, IBroker {
   }
 
   private boolean insert(Replica replica) {
+    boolean leader = replica.getId() == 0; // Replica with id 0 is always the leader
+
+//    if (dumb) {
+//      StorageVolume storageVolume = selectStorageVolume(replica);
+//      storageVolume.addReplica(replica, leader);
+//      replicas.add(replica);
+//      partitions.add(replica.getTopicPartition());
+//      return true;
+//    }
+
     StorageVolume storageVolume = selectStorageVolume(replica);
     if (storageVolume == null) {
       return false;
     }
 
-    boolean leader = replica.getId() == 0; // Replica with id 0 is always the leader
-
     storageVolume.addReplica(replica, leader);
 
-    allocateMoreStorageBinsIfNecessary();
+    if (!dumb) {
+      allocateMoreStorageBinsIfNecessary();
+    }
 
     for (int i = 0; i < 5; i++) {
       totalSizeOfItems[i] += replica.getRequirements()[i];
@@ -118,6 +134,10 @@ public class Broker implements Comparable<Broker>, IBroker {
       return false;
     }
 
+    if (dumb) {
+      return true;
+    }
+
     for (int i = 0; i < replica.getDimensionCount(); i++) {
       if (replica.getDimension(i) > remainingCapacity[i]) {
         return false;
@@ -127,6 +147,11 @@ public class Broker implements Comparable<Broker>, IBroker {
   }
 
   private StorageVolume selectStorageVolume(Replica replica) {
+    if (dumb) {
+      Collections.shuffle(storageVolumes);
+      return storageVolumes.get(0);
+    }
+
     Collections.sort(storageVolumes);
     for (StorageVolume volume : storageVolumes) {
       if (volume.isFeasible(replica)) {
@@ -144,7 +169,7 @@ public class Broker implements Comparable<Broker>, IBroker {
   }
 
   public void allocateMoreStorageBinsIfNecessary() {
-    if ((storageVolumeType != StorageVolumeType.D2HDD) && (storageVolumeType != StorageVolumeType.D2HDDSTATIC) &&
+    if (!dumb && (storageVolumeType != StorageVolumeType.D2HDD) && (storageVolumeType != StorageVolumeType.D2HDDSTATIC) &&
         (storageVolumes.size() == maxStorageVolumes)) {
       int effectiveThroughput = 0;
       for (StorageVolume storageVolume : storageVolumes) {
@@ -221,7 +246,7 @@ public class Broker implements Comparable<Broker>, IBroker {
 
   private void initializeStorageVolumes() {
     for (int i = 0; i < computeVolumeCount(); i++) {
-      storageVolumes.add(new StorageVolume(id, storageVolumeType, instanceType, iopSizeKB));
+      storageVolumes.add(new StorageVolume(id, storageVolumeType, instanceType, iopSizeKB, dumb));
     }
   }
 
@@ -257,6 +282,8 @@ public class Broker implements Comparable<Broker>, IBroker {
   private int computeVolumeCount() {
     if (storageVolumeType == StorageVolumeType.D2HDD || storageVolumeType == StorageVolumeType.D2HDDSTATIC) {
       return instanceType.getLocalDiskCount();
+    } else if (dumb) {
+      return (int) Math.ceil(((instanceType.getStorageBWMB() * 1024.0) / iopSizeKB) / storageVolumeType.getIOPS(iopSizeKB, instanceType.getStorageBWMB()));
     } else {
       return 1; // Initial volume count
     }

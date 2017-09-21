@@ -33,8 +33,13 @@ public class StorageVolume implements Comparable<StorageVolume>{
   private long[] remaining = new long[2];
   private long[] totalItemSize = new long[2];
   private double size = 0;
+  private final boolean dumb;
 
   public StorageVolume(String brokerId, StorageVolumeType type, CCInstanceType instanceType, int iopSizeKB) {
+    this(brokerId, type, instanceType, iopSizeKB, false);
+  }
+
+  public StorageVolume(String brokerId, StorageVolumeType type, CCInstanceType instanceType, int iopSizeKB, boolean dumb) {
     this.brokerId = brokerId;
     this.type = type;
     this.instanceType = instanceType;
@@ -44,6 +49,7 @@ public class StorageVolume implements Comparable<StorageVolume>{
     this.remaining = this.capacity.clone();
     this.totalItemSize[0] = 0;
     this.totalItemSize[1] = 0; // IOPS
+    this.dumb = dumb;
   }
 
   public boolean addReplica(Replica replica, boolean leader) {
@@ -76,7 +82,7 @@ public class StorageVolume implements Comparable<StorageVolume>{
   }
 
   public boolean isFeasible(Replica replica) {
-    return replica.getDimension(1) < remaining[0] && replica.getDimension(2) < remaining[1];
+    return dumb || replica.getDimension(1) < remaining[0] && replica.getDimension(2) < remaining[1];
   }
 
   private int computeEffectiveIOPS() {

@@ -21,7 +21,6 @@ public abstract class CapacityPlanner {
   }
 
   public abstract List<Broker> solve();
-  public abstract List<DumbBroker> dumbSolve();
 
   List<Broker> createBrokers(int binCount) {
     List<Broker> brokers = new ArrayList<>();

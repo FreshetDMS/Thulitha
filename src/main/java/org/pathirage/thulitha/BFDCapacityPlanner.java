@@ -48,7 +48,7 @@ public class BFDCapacityPlanner extends CapacityPlanner {
       }
 
       boolean packed = false;
-      for (IBroker b : brokers) {
+      for (Broker b : brokers) {
         if (b.add(largestReplica)) {
           packed = true;
           break;
@@ -74,10 +74,5 @@ public class BFDCapacityPlanner extends CapacityPlanner {
     brokers.removeAll(emptyBrokers);
 
     return brokers;
-  }
-
-  @Override
-  public List<DumbBroker> dumbSolve() {
-    throw new UnsupportedOperationException("BFDCapacityPlanner does not support this method");
   }
 }

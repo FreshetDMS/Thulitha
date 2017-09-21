@@ -1,7 +1,6 @@
 package org.pathirage.thulitha.utils;
 
 import org.pathirage.thulitha.Broker;
-import org.pathirage.thulitha.IBroker;
 import org.pathirage.thulitha.Replica;
 
 import java.util.List;

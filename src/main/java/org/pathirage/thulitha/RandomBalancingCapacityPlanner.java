@@ -31,18 +31,13 @@ public class RandomBalancingCapacityPlanner extends CapacityPlanner {
 
   @Override
   public List<Broker> solve() {
-    throw new UnsupportedOperationException("RandomCapacityPlanner does not support this method.");
-  }
-
-  @Override
-  public List<DumbBroker> dumbSolve() {
-    List<DumbBroker> brokers = createDumbBrokers(binCount);
+    List<Broker> brokers = createBrokers(binCount);
     while (!replicas.isEmpty()) {
       Replica r = replicas.get(randomizer.nextInt(replicas.size()));
 
       boolean packed = false;
-      DumbBroker lastSelectedBroker = null;
-      for (DumbBroker b : brokers) {
+      Broker lastSelectedBroker = null;
+      for (Broker b : brokers) {
         if (b.add(r)) {
           packed = true;
           lastSelectedBroker = b;
@@ -63,10 +58,12 @@ public class RandomBalancingCapacityPlanner extends CapacityPlanner {
     return brokers;
   }
 
-  List<DumbBroker> createDumbBrokers(int binCount) {
-    List<DumbBroker> brokers = new ArrayList<>();
+
+
+  List<Broker> createBrokers(int binCount) {
+    List<Broker> brokers = new ArrayList<>();
     for (int i = 0; i < binCount; i++) {
-      brokers.add(new DumbBroker());
+      brokers.add(new Broker(instanceType, storageVolumeType, IO_OP_SIZE_128KB, true));
     }
 
     return brokers;
