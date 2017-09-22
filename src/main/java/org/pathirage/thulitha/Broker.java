@@ -299,15 +299,15 @@ public class Broker implements Comparable<Broker> {
   }
 
   public double getStorageBWUtilization() {
-    return 0.0;
+    return new Double(totalSizeOfItems[2]) / ((instanceType.getStorageBWMB() * 1024.0) / iopSizeKB);
   }
 
   public double getNetworkInBWUtilization() {
-    return 0.0;
+    return new Double(totalSizeOfItems[3]) / instanceType.getNetworkBWMB();
   }
 
   public double getNetworkOutBWUtilization() {
-    return 0.0;
+    return new Double(totalSizeOfItems[4]) / instanceType.getNetworkBWMB();
   }
 
   public int getReplicaCount() {

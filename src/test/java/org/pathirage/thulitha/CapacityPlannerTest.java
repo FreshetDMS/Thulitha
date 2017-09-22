@@ -33,5 +33,9 @@ public class CapacityPlannerTest {
     List<Broker> solution = cp.solve();
 
     Assert.assertEquals(112, solution.size());
+
+    for (Broker b : solution) {
+      System.out.println("Utilization [NIn, NOut, Storage]: " + b.getNetworkInBWUtilization() + ", " + b.getNetworkOutBWUtilization() + ", " + b.getStorageBWUtilization());
+    }
   }
 }
