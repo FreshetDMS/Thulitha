@@ -30,8 +30,30 @@ public class BFDCapacityPlanner extends CapacityPlanner {
     super(replicas, instanceType, storageVolumeType, dynamic);
   }
 
+  @Override
   public List<Broker> solve() {
-    List<Broker> brokers = createBrokers(replicas.size());
+    int lowerBound = (int)computeLowestBinCount();
+    List<Broker> solution;
+    int i = 0;
+    while(true) {
+      try {
+        solution = solve(lowerBound, new ArrayList<>(replicas));
+        if (solution != null && solution.size() >= lowerBound) {
+          break;
+        }
+      } catch (CapacityPlanningException e) {
+        lowerBound += 1;
+      }
+      i++;
+    }
+
+    log.info("Number of iterations: " + i);
+
+    return solution;
+  }
+
+  public List<Broker> solve(int binCount, List<Replica> replicas) throws CapacityPlanningException {
+    List<Broker> brokers = createBrokers(binCount);
 
     log.info(String.format("Solving capacity planning for %s replicas with initial brokers %s", replicas.size(), brokers.size()));
 
@@ -56,7 +78,7 @@ public class BFDCapacityPlanner extends CapacityPlanner {
       }
 
       if (!packed) {
-        throw new RuntimeException("Could not pack replica " + largestReplica);
+        throw new CapacityPlanningException("Could not pack replica " + largestReplica);
       }
 
       replicas.remove(largestReplica);

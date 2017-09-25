@@ -32,6 +32,9 @@ public enum CCInstanceType {
   private static final int[] STORAGE_BW = {125, 250, 500, 1250, 550, 550, 550};
   private static final float[] HOURLY_COST = {0.296f, 0.592f, 1.480f, 2.369f, 0.804f, 1.608f, 3.216f};
   private static final int[] LOCAL_DISK_COUNT = {0, 0, 0, 0, 6, 12, 24};
+  private static final int[] STORAGE_VOLUME_COUNT = {1, 1, 2, 5, 6, 12, 24};
+  private static final long[] SIZES = {16 * 1024 * 1024, 16 * 1024 * 1024, 16 * 1024 * 1024, 16 * 1024 * 1024,
+      2 * 1024 * 1024, 2 * 1024 * 1024, 2 * 1024 * 1024};
 
   public String getInstanceTypeIdentifier() {
     return TYPE_IDENTIFIERS[ordinal()];
@@ -59,5 +62,17 @@ public enum CCInstanceType {
 
   public int getLocalDiskCount() {
     return LOCAL_DISK_COUNT[ordinal()];
+  }
+
+  public long[] capacity() {
+    long[] dimensions = new long[]{0,0,0,0,0};
+
+    dimensions[0] = RAM[ordinal()];
+    dimensions[1] = STORAGE_VOLUME_COUNT[ordinal()] * SIZES[ordinal()];
+    dimensions[2] = (STORAGE_BW[ordinal()] * 1024) / 128;
+    dimensions[3] = NETWORK_BW[ordinal()];
+    dimensions[4] = NETWORK_BW[ordinal()];
+
+    return dimensions;
   }
 }

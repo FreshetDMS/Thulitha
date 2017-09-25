@@ -30,4 +30,49 @@ public abstract class CapacityPlanner {
 
     return brokers;
   }
+
+  long computeLowestBinCount() {
+    long numberOfBrokers = 0;
+    long[] totalSizeOfItems = computeTotalSizeOfReplicas();
+    long[] brokerCapacity = instanceType.capacity();
+
+
+    for(int d = 0; d < 5; d++) {
+      long nb = totalSizeOfItems[d]/ brokerCapacity[d];
+      if (totalSizeOfItems[d] % brokerCapacity[d] > 0) {
+        nb += 1;
+      }
+
+      numberOfBrokers = Math.max(numberOfBrokers, nb);
+    }
+
+    return numberOfBrokers;
+  }
+
+  long[] computeTotalSizeOfReplicas() {
+    long[] totalItemSize = new long[]{0, 0, 0, 0, 0};
+
+    for (Replica r : replicas) {
+      for (int d = 0; d < 5; d++) {
+        totalItemSize[d] += r.getDimension(d);
+      }
+    }
+
+    return totalItemSize;
+  }
+
+  public static class CapacityPlanningException extends Exception {
+
+    public CapacityPlanningException() {
+      super();
+    }
+
+    public CapacityPlanningException(String message) {
+      super(message);
+    }
+
+    public CapacityPlanningException(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
 }
