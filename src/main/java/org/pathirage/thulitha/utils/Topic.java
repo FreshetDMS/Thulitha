@@ -39,7 +39,7 @@ public class Topic {
     this.retentionPeriodDays = retentionPeriodDays;
     this.readCapacityForFollowers = readCapacityForFollowers;
 
-    if (numReplays != replayRates.length) {
+    if (numReplays!= 0 && numReplays != replayRates.length) {
       throw new RuntimeException("Number of replays and replay rate does not match.");
     }
   }
@@ -52,6 +52,9 @@ public class Topic {
     int overallReplayRate = IntStream.of(replayRates).sum();
     int perPartitionReplayRate = overallReplayRate / partitions;
     int perPartitionReplayRateMB = (int) Math.ceil((perPartitionReplayRate * avgMessageSizeBytes) / MILLION);
+    if (numReplays == 0) {
+      perPartitionReplayRateMB = 0;
+    }
     int perPartitionMemRequirement = Math.max(maxConsumerLagSeconds * perPartitionProduceRateMB,
         FLUSH_DELAY_SECS * perPartitionProduceRateMB + perPartitionReplayRateMB);
     int storageBWRequirement = perPartitionProduceRateMB + perPartitionReplayRateMB;

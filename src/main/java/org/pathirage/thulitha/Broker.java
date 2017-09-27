@@ -188,6 +188,17 @@ public class Broker implements Comparable<Broker> {
   }
 
   public int numberOfStorageVolumes() {
+    if (instanceType != CCInstanceType.D2_2X && instanceType != CCInstanceType.D2_4X && instanceType != CCInstanceType.D2_8X) {
+      int numVols = 0;
+      for (StorageVolume storageVolume : storageVolumes) {
+        if (storageVolume.getNumberOfLogs() > 0) {
+          numVols += 1;
+        }
+      }
+
+      return numVols;
+    }
+
     return storageVolumes.size();
   }
 

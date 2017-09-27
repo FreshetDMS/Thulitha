@@ -8,9 +8,9 @@ import java.util.List;
 public class RandomPlannerTest extends BaseTest {
   @Test
   public void testRandomCapacityPlanner() {
-    List<Replica> replicas = getHighNetworkOutReplicas();
+    List<Replica> replicas = getNoReplayAndSingleConsumer();
 
-    CapacityPlanner cp = new BFDCapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true);
+    CapacityPlanner cp = new BFDCapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true, false);
     List<Broker> solution = cp.solve();
 
     replicas = getHighNetworkOutReplicas();
@@ -18,7 +18,7 @@ public class RandomPlannerTest extends BaseTest {
     RandomCapacityPlanner randomCP = new RandomCapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true, solution.size());
     List<Broker> randomSolution = randomCP.solve();
 
-    Assert.assertEquals(112, randomSolution.size());
+//    Assert.assertEquals(95, randomSolution.size());
 
     for (Broker b : randomSolution) {
       System.out.println("Utilization [NIn, NOut, Storage]: " + b.getNetworkInBWUtilization() + ", " + b.getNetworkOutBWUtilization() + ", " + b.getStorageBWUtilization());
@@ -29,7 +29,7 @@ public class RandomPlannerTest extends BaseTest {
   public void testRandomBalancingCapacityPlanner() {
     List<Replica> replicas = getHighNetworkOutReplicas();
 
-    CapacityPlanner cp = new BFDCapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true);
+    CapacityPlanner cp = new BFDCapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true, false);
     List<Broker> solution = cp.solve();
 
     replicas = getHighNetworkOutReplicas();
@@ -37,7 +37,7 @@ public class RandomPlannerTest extends BaseTest {
     RandomBalancingCapacityPlanner randomCP = new RandomBalancingCapacityPlanner(replicas, CCInstanceType.M4_4X, StorageVolumeType.ST1, true, solution.size());
     List<Broker> randomSolution = randomCP.solve();
 
-    Assert.assertEquals(112, randomSolution.size());
+    Assert.assertEquals(95, randomSolution.size());
 
     for (Broker b : randomSolution) {
       System.out.println("Utilization [NIn, NOut, Storage]: " + b.getNetworkInBWUtilization() + ", " + b.getNetworkOutBWUtilization() + ", " + b.getStorageBWUtilization());

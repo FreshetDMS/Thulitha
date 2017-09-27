@@ -31,6 +31,24 @@ public abstract class CapacityPlanner {
     return brokers;
   }
 
+  public long lowestPossibleBrokersRequired() {
+    long numberOfBrokers = 0;
+    long[] totalSizeOfItems = computeTotalSizeOfReplicas();
+    long[] brokerCapacity = instanceType.capacity();
+
+
+    for(int d = 0; d < 5; d++) {
+      long nb = totalSizeOfItems[d]/ brokerCapacity[d];
+      if (totalSizeOfItems[d] % brokerCapacity[d] > 0) {
+        nb += 1;
+      }
+
+      numberOfBrokers = Math.max(numberOfBrokers, nb);
+    }
+
+    return numberOfBrokers;
+  }
+
   long computeLowestBinCount() {
     long numberOfBrokers = 0;
     long[] totalSizeOfItems = computeTotalSizeOfReplicas();

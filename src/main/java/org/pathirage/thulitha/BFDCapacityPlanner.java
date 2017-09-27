@@ -26,8 +26,11 @@ import java.util.List;
 public class BFDCapacityPlanner extends CapacityPlanner {
   private static final Logger log = LoggerFactory.getLogger(BFDCapacityPlanner.class);
 
-  public BFDCapacityPlanner(List<Replica> replicas, CCInstanceType instanceType, StorageVolumeType storageVolumeType, boolean dynamic) {
+  private final boolean startWithLowestPossible;
+
+  public BFDCapacityPlanner(List<Replica> replicas, CCInstanceType instanceType, StorageVolumeType storageVolumeType, boolean dynamic, boolean startWithLowestPossible) {
     super(replicas, instanceType, storageVolumeType, dynamic);
+    this.startWithLowestPossible = startWithLowestPossible;
   }
 
   @Override
@@ -38,7 +41,7 @@ public class BFDCapacityPlanner extends CapacityPlanner {
     while(true) {
       try {
         solution = solve(lowerBound, new ArrayList<>(replicas));
-        if (solution != null && solution.size() >= lowerBound) {
+        if (solution != null && solution.size() > 0) {
           break;
         }
       } catch (CapacityPlanningException e) {
@@ -96,5 +99,14 @@ public class BFDCapacityPlanner extends CapacityPlanner {
     brokers.removeAll(emptyBrokers);
 
     return brokers;
+  }
+
+  @Override
+  long computeLowestBinCount() {
+    if (startWithLowestPossible) {
+      return super.computeLowestBinCount();
+    }
+
+    return replicas.size();
   }
 }
