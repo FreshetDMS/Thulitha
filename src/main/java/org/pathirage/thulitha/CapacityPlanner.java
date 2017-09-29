@@ -79,7 +79,21 @@ public abstract class CapacityPlanner {
     return totalItemSize;
   }
 
-  public static class CapacityPlanningException extends Exception {
+  long[] getMaxRequirements() {
+    long[] max = new long[]{0,0,0,0,0};
+
+    for (Replica r : replicas) {
+      for (int d = 0; d < 5; d++) {
+        if (max[d] < r.getDimension(d)) {
+          max[d] = r.getDimension(d);
+        }
+      }
+    }
+
+    return max;
+  }
+
+  public static class CapacityPlanningException extends RuntimeException {
 
     public CapacityPlanningException() {
       super();

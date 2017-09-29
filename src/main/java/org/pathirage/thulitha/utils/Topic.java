@@ -1,7 +1,6 @@
 package org.pathirage.thulitha.utils;
 
 import org.pathirage.thulitha.Replica;
-import weka.Run;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.stream.IntStream;
 
 public class Topic {
   private static final double MILLION = 1000000.0;
-  private static final int SECONDS_TO_DAY = 24 * 60 * 60;
+  private static final int SECONDS_TO_HOURS = 60 * 60;
   private static final int FLUSH_DELAY_SECS = 30;
 
   private final String name;
@@ -21,11 +20,11 @@ public class Topic {
   private final int numReplays;
   private final int[] replayRates;
   private final int maxConsumerLagSeconds;
-  private final int retentionPeriodDays;
+  private final int retentionPeriodHours;
   private final boolean readCapacityForFollowers;
 
   public Topic(String name, int produceRate, int avgMessageSizeBytes, int partitions, int replicationFactor,
-               int numConsumers, int numReplays, int[] replayRates, int maxConsumerLagSeconds, int retentionPeriodDays,
+               int numConsumers, int numReplays, int[] replayRates, int maxConsumerLagSeconds, int retentionPeriodHours,
                boolean readCapacityForFollowers) {
     this.name = name;
     this.produceRate = produceRate;
@@ -36,7 +35,7 @@ public class Topic {
     this.numReplays = numReplays;
     this.replayRates = replayRates;
     this.maxConsumerLagSeconds = maxConsumerLagSeconds;
-    this.retentionPeriodDays = retentionPeriodDays;
+    this.retentionPeriodHours = retentionPeriodHours;
     this.readCapacityForFollowers = readCapacityForFollowers;
 
     if (numReplays!= 0 && numReplays != replayRates.length) {
@@ -48,7 +47,7 @@ public class Topic {
     List<Replica> replicas = new ArrayList<>();
 
     int perPartitionProduceRateMB = (int) Math.ceil(((produceRate * avgMessageSizeBytes) / partitions) / MILLION);
-    int storageRequirement = perPartitionProduceRateMB * SECONDS_TO_DAY;
+    int storageRequirement = perPartitionProduceRateMB * retentionPeriodHours * SECONDS_TO_HOURS;
     int overallReplayRate = IntStream.of(replayRates).sum();
     int perPartitionReplayRate = overallReplayRate / partitions;
     int perPartitionReplayRateMB = (int) Math.ceil((perPartitionReplayRate * avgMessageSizeBytes) / MILLION);

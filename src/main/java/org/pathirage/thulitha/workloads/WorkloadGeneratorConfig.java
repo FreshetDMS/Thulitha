@@ -21,19 +21,27 @@ import org.apache.commons.math3.util.Pair;
 import java.util.Random;
 
 public class WorkloadGeneratorConfig {
-  private int maxReplicationFactor;
-  private boolean allocateReadCapacityForFollowers;
-  private int perTopicPartitionCountMin;
-  private int perTopicPartitionCountMax;
-  private int minMessageSize;
-  private int maxMessageSize;
-  private int minRetentionHours;
-  private int maxRetentionHours;
-  private boolean clusterWideRetentionConfiguration;
-  private int minConsumers;
-  private int maxConsumers;
-  private int maxPerPartitionPublishRate;
-  private int minPerPartitionPublishRate;
+  private int maxReplicationFactor = 2;
+  private boolean allocateReadCapacityForFollowers = false;
+  private int perTopicPartitionCountMin = 50;
+  private int perTopicPartitionCountMax = 150;
+  private int minMessageSize = 124;
+  private int maxMessageSize = 356;
+  private int minRetentionHours = 12;
+  private int maxRetentionHours = 48;
+  private boolean clusterWideRetentionConfiguration = true;
+  private int minConsumers = 1;
+  private int maxConsumers = 3;
+  private int maxPerPartitionPublishRate = 10;
+  private int minPerPartitionPublishRate = 2;
+  private int minReplayFactor = 1;
+  private int maxReplayFactor = 3;
+  private int maxReplays = 2;
+  private int minReplays = 0;
+  private int minConsumerLag = 10;
+  private int maxConsumerLag = 120;
+  private int previousRetentionPeriod = -1;
+  private boolean startWithLowestPossible = false;
 
   private final Config config;
   private final Random random = new Random(System.currentTimeMillis());
@@ -47,7 +55,11 @@ public class WorkloadGeneratorConfig {
     // Initialize this from config object.
   }
 
-  public Pair<Integer, Integer> getNextPartitionCountAndReplicationFactor() {
+  public boolean isAllocateReadCapacityForFollowers() {
+    return allocateReadCapacityForFollowers;
+  }
+
+  public Pair<Integer, Integer> getNextReplicationFactorAndPartitionCount() {
     int replicationFactor = random.nextInt(maxReplicationFactor);
     int partitionCount = perTopicPartitionCountMin + random.nextInt(perTopicPartitionCountMax - perTopicPartitionCountMin);
 
@@ -60,6 +72,38 @@ public class WorkloadGeneratorConfig {
 
   public int getNextAverageMessageSize() {
     return minMessageSize + random.nextInt(maxMessageSize - minMessageSize);
+  }
+
+  public int getNextConsumerCount() {
+    return minConsumers + random.nextInt(maxConsumers - minConsumers);
+  }
+
+  public int getNextConsumerLagSeconds() {
+    return minConsumerLag + random.nextInt(maxConsumerLag - minConsumerLag);
+  }
+
+  public Pair<Integer, Integer[]> getNextReplayConfiguration() {
+    int replays = minReplays + random.nextInt(maxReplays);
+
+    Integer[] replayRates = new Integer[replays];
+
+    for (int i = 0; i < replays; i++) {
+      replayRates[i] = minReplayFactor + random.nextInt(maxReplayFactor);
+    }
+
+    return new Pair<Integer, Integer[]>(replays, replayRates);
+  }
+
+  public int getNextRetentionHours() {
+    if (clusterWideRetentionConfiguration) {
+      if (previousRetentionPeriod == -1) {
+        previousRetentionPeriod = minRetentionHours + random.nextInt(maxRetentionHours - minRetentionHours);
+      }
+
+      return previousRetentionPeriod;
+    }
+
+    return minRetentionHours + random.nextInt(maxRetentionHours - minRetentionHours);
   }
 
   public void setMaxReplicationFactor(int maxReplicationFactor) {
@@ -104,5 +148,37 @@ public class WorkloadGeneratorConfig {
 
   public void setMaxConsumers(int maxConsumers) {
     this.maxConsumers = maxConsumers;
+  }
+
+  public void setMaxPerPartitionPublishRate(int maxPerPartitionPublishRate) {
+    this.maxPerPartitionPublishRate = maxPerPartitionPublishRate;
+  }
+
+  public void setMinPerPartitionPublishRate(int minPerPartitionPublishRate) {
+    this.minPerPartitionPublishRate = minPerPartitionPublishRate;
+  }
+
+  public void setMinReplayFactor(int minReplayFactor) {
+    this.minReplayFactor = minReplayFactor;
+  }
+
+  public void setMaxReplayFactor(int maxReplayFactor) {
+    this.maxReplayFactor = maxReplayFactor;
+  }
+
+  public void setMaxReplays(int maxReplays) {
+    this.maxReplays = maxReplays;
+  }
+
+  public void setMinReplays(int minReplays) {
+    this.minReplays = minReplays;
+  }
+
+  public void setMinConsumerLag(int minConsumerLag) {
+    this.minConsumerLag = minConsumerLag;
+  }
+
+  public void setMaxConsumerLag(int maxConsumerLag) {
+    this.maxConsumerLag = maxConsumerLag;
   }
 }

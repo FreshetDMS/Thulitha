@@ -19,9 +19,7 @@ import org.apache.commons.math3.util.Pair;
 import org.pathirage.thulitha.Replica;
 import org.pathirage.thulitha.utils.Topic;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Basic algorithm:
@@ -42,22 +40,68 @@ public class WorkloadGenerator {
 
   public List<Replica> run(int replicaCount) {
     int generated = 0;
+    int t = 0;
+    Map<String, Integer> maxCounts = new HashMap<>();
+    maxCounts.put("PublishRate", 0);
+    maxCounts.put("MessageSize", 0);
+    maxCounts.put("replays", 0);
+    maxCounts.put("consumers", 0);
+    maxCounts.put("retention", 0);
+    maxCounts.put("partitions", 0);
 
     List<Topic> topics = new ArrayList<>();
     List<Replica> replicas = new ArrayList<>();
 
     while (generated < replicaCount) {
-      Pair<Integer, Integer> replicationFactorAndPartitionCount = config.getNextPartitionCountAndReplicationFactor();
+      Pair<Integer, Integer> replicationFactorAndPartitionCount = config.getNextReplicationFactorAndPartitionCount();
       generated += replicationFactorAndPartitionCount.getFirst() * replicationFactorAndPartitionCount.getSecond();
 
       int publishRateMb = config.getNextPerPartitionPublishRate();
       int averageMessageSize = config.getNextAverageMessageSize();
-      int perPartitionPublishRate = (int)Math.ceil(((double)publishRateMb * 1024 * 1024) / averageMessageSize);
+      int publishRate = (int)Math.ceil(((double)publishRateMb * 1024 * 1024) / averageMessageSize) * replicationFactorAndPartitionCount.getSecond();
 
+      Pair<Integer, Integer[]> replays = config.getNextReplayConfiguration();
+      int[] replayRates = new int[replays.getFirst()];
+
+      for (int j = 0; j < replays.getFirst(); j++) {
+        replayRates[j] = replays.getSecond()[j] * publishRate;
+      }
+
+      int consumerCount = config.getNextConsumerCount();
+      int retentionPeriod = config.getNextRetentionHours();
+
+      if (maxCounts.get("partitions") < replicationFactorAndPartitionCount.getSecond()) {
+        maxCounts.put("partitions", replicationFactorAndPartitionCount.getSecond());
+      }
+
+      if (maxCounts.get("PublishRate") < publishRateMb) {
+        maxCounts.put("PublishRate", publishRateMb);
+      }
+
+      if (maxCounts.get("MessageSize") < averageMessageSize) {
+        maxCounts.put("MessageSize", averageMessageSize);
+      }
+
+      if (maxCounts.get("replays") < replays.getFirst()) {
+        maxCounts.put("replays", replays.getFirst());
+      }
+
+      if (maxCounts.get("consumers") < consumerCount) {
+        maxCounts.put("consumers", consumerCount);
+      }
+
+      topics.add(new Topic(String.format("t%s", t), publishRate, averageMessageSize,
+          replicationFactorAndPartitionCount.getSecond(),
+          replicationFactorAndPartitionCount.getFirst(),
+          consumerCount, replays.getFirst(), replayRates, config.getNextConsumerLagSeconds(),
+          retentionPeriod, config.isAllocateReadCapacityForFollowers()));
+      t++;
     }
 
-    for(Topic t : topics) {
-      replicas.addAll(t.getReplicas());
+    System.out.println(Arrays.toString(maxCounts.entrySet().toArray()));
+
+    for(Topic topic : topics) {
+      replicas.addAll(topic.getReplicas());
     }
 
     return replicas;

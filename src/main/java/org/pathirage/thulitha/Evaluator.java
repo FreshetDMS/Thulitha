@@ -17,8 +17,11 @@ package org.pathirage.thulitha;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import org.pathirage.thulitha.workloads.WorkloadGenerator;
+import org.pathirage.thulitha.workloads.WorkloadGeneratorConfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +33,12 @@ public class Evaluator {
   @Parameter(names = {"-T", "--instance-types"})
   private String instanceTypes;
 
+  @Parameter(names = {"-lb"})
+  private boolean startWithLowerBound = false;
+
+  @Parameter(names = {"-u", "--upper-bound"})
+  private int upperBound = 2000;
+
   public static void main(String[] args) {
     Evaluator evaluator = new Evaluator();
     JCommander.newBuilder()
@@ -40,7 +49,7 @@ public class Evaluator {
     evaluator.run();
   }
 
-  public void run(){
+  public void run() {
     if (evaluation.equals("cr")) {
       if (instanceTypes == null || instanceTypes.isEmpty()) {
         throw new RuntimeException("Instance type argument is missing.");
@@ -48,9 +57,9 @@ public class Evaluator {
 
       String[] specifiedTypes = instanceTypes.split(";");
       List<Double> competitiveRatios = new ArrayList<>();
-      for(String t : specifiedTypes) {
+      for (String t : specifiedTypes) {
         CCInstanceType instanceType = CCInstanceType.valueOf(t.trim().toUpperCase());
-        for(int i = 500; i < 2000; i += 100) {
+        for (int i = 500; i < upperBound; i += 100) {
           competitiveRatios.add(computeCompetitiveRatio(instanceType, i));
         }
       }
@@ -60,20 +69,27 @@ public class Evaluator {
   }
 
   private StorageVolumeType getVolumeType(CCInstanceType instanceType) {
+    if (instanceType == CCInstanceType.D2_2X || instanceType == CCInstanceType.D2_4X || instanceType == CCInstanceType.D2_8X) {
+      return StorageVolumeType.D2HDD;
+    }
     return StorageVolumeType.ST1;
   }
 
   private List<Replica> getReplicas(int count) {
-    return Collections.emptyList();
+    return new WorkloadGenerator(new WorkloadGeneratorConfig(null)).run(count);
   }
 
   private double computeCompetitiveRatio(CCInstanceType instanceType, int replicaCount) {
     List<Replica> replicas = getReplicas(replicaCount);
     StorageVolumeType storageVolumeType = getVolumeType(instanceType);
 
-    BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, storageVolumeType, true, false);
+    BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, storageVolumeType, true, startWithLowerBound);
     long optimalBrokers = capacityPlanner.lowestPossibleBrokersRequired();
+    System.out.println("Max values for each dimension: " + Arrays.toString(capacityPlanner.getMaxRequirements()));
     long solutionSize = capacityPlanner.solve().size();
-    return (double)solutionSize/optimalBrokers;
+
+    // TODO: Move to cost.
+    
+    return (double) solutionSize / optimalBrokers;
   }
 }

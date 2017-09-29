@@ -56,6 +56,10 @@ public class BFDCapacityPlanner extends CapacityPlanner {
   }
 
   public List<Broker> solve(int binCount, List<Replica> replicas) throws CapacityPlanningException {
+    if (binCount > replicas.size()) {
+      throw new CapacityPlanningException("Could not find a solution.");
+    }
+
     List<Broker> brokers = createBrokers(binCount);
 
     log.info(String.format("Solving capacity planning for %s replicas with initial brokers %s", replicas.size(), brokers.size()));

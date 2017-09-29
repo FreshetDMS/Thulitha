@@ -18,4 +18,4 @@ dependencies {
   testCompile 'junit:junit:4.12'
 }
 
-mainClassName = "org.pathirage.thulitha.experiments.storagemodel.WekaDecisionTrees"
+mainClassName = "org.pathirage.thulitha.Evaluator"
