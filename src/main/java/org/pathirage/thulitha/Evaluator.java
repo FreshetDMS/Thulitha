@@ -19,13 +19,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.pathirage.thulitha.workloads.WorkloadGenerator;
 import org.pathirage.thulitha.workloads.WorkloadGeneratorConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Evaluator {
+  private static final Logger log = LoggerFactory.getLogger(Evaluator.class);
 
   @Parameter(names = {"-e", "--evaluation"}, required = true)
   private String evaluation;
@@ -39,6 +39,9 @@ public class Evaluator {
   @Parameter(names = {"-u", "--upper-bound"})
   private int upperBound = 2000;
 
+  @Parameter(names = {"-i", "--iterations"})
+  private int iterations = 5;
+
   public static void main(String[] args) {
     Evaluator evaluator = new Evaluator();
     JCommander.newBuilder()
@@ -51,21 +54,79 @@ public class Evaluator {
 
   public void run() {
     if (evaluation.equals("cr")) {
-      if (instanceTypes == null || instanceTypes.isEmpty()) {
-        throw new RuntimeException("Instance type argument is missing.");
+      List<CCInstanceType> instanceTypes = getInstanceTypes();
+      for (CCInstanceType t : instanceTypes) {
+        List<Double> competitiveRatios = new ArrayList<>();
+        for (int p = 0; p < iterations; p++) {
+          log.info(String.format("Iteration %s of competitive ration calculation for instance type %s", p, t));
+          List<Double> iterationsCompetitiveRatios = new ArrayList<>();
+          for (int i = 500; i < upperBound; i += 400) {
+            iterationsCompetitiveRatios.add(computeCompetitiveRatio(t, i));
+          }
+
+          competitiveRatios.add(Collections.max(iterationsCompetitiveRatios));
+        }
+
+        log.info(String.format("Competitive Ratio for instance %s = %s", t, Collections.max(competitiveRatios)));
       }
 
-      String[] specifiedTypes = instanceTypes.split(";");
-      List<Double> competitiveRatios = new ArrayList<>();
-      for (String t : specifiedTypes) {
-        CCInstanceType instanceType = CCInstanceType.valueOf(t.trim().toUpperCase());
-        for (int i = 500; i < upperBound; i += 100) {
-          competitiveRatios.add(computeCompetitiveRatio(instanceType, i));
+    } else if (evaluation.equals("et")) {
+      List<CCInstanceType> instanceTypes = getInstanceTypes();
+      Map<String, Double> executionTimes = new HashMap<>();
+      for (CCInstanceType t : instanceTypes) {
+        for (int r = 500; r < upperBound; r += 400) {
+          List<Double> executionTime = new ArrayList<>();
+          for (int i = 0; i < iterations; i++) {
+            executionTime.add(measureExecutionTime(t, r));
+          }
+
+          executionTimes.put(String.format("%s-%s", t, r), calculateAverage(executionTime));
         }
       }
 
-      System.out.println("Competitive Ratio = " + Collections.max(competitiveRatios));
+      log.info("Execution times: " + Arrays.toString(executionTimes.entrySet().toArray()));
     }
+  }
+
+  private double calculateAverage(List<Double> values) {
+    double sum = 0;
+    if (!values.isEmpty()) {
+      for (Double mark : values) {
+        sum += mark;
+      }
+      return sum / values.size();
+    }
+    return sum;
+  }
+
+  public double measureExecutionTime(CCInstanceType instanceType, int replicaCount) {
+    List<Replica> replicas = getReplicas(replicaCount);
+
+    StorageVolumeType storageVolumeType = getVolumeType(instanceType);
+
+    BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, storageVolumeType, true, startWithLowerBound);
+    long start = System.nanoTime();
+
+    long solutionSize = capacityPlanner.solve().size();
+    if (log.isDebugEnabled()) {
+      log.debug("Solution size: " + solutionSize);
+    }
+    return (System.nanoTime() - start) / 1000000;
+  }
+
+  private List<CCInstanceType> getInstanceTypes() {
+    if (instanceTypes == null || instanceTypes.isEmpty()) {
+      throw new RuntimeException("Instance type argument is missing.");
+    }
+
+    String[] specifiedTypes = instanceTypes.split(";");
+    List<CCInstanceType> instanceTypes = new ArrayList<>();
+
+    for (String t : specifiedTypes) {
+      instanceTypes.add(CCInstanceType.valueOf(t));
+    }
+
+    return instanceTypes;
   }
 
   private StorageVolumeType getVolumeType(CCInstanceType instanceType) {
@@ -85,11 +146,13 @@ public class Evaluator {
 
     BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, storageVolumeType, true, startWithLowerBound);
     long optimalBrokers = capacityPlanner.lowestPossibleBrokersRequired();
-    System.out.println("Max values for each dimension: " + Arrays.toString(capacityPlanner.getMaxRequirements()));
+    if (log.isDebugEnabled()) {
+      log.debug("Max values for each dimension: " + Arrays.toString(capacityPlanner.getMaxRequirements()));
+    }
     long solutionSize = capacityPlanner.solve().size();
 
     // TODO: Move to cost.
-    
+
     return (double) solutionSize / optimalBrokers;
   }
 }
