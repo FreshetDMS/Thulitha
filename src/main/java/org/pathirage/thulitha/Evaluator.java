@@ -17,6 +17,9 @@ package org.pathirage.thulitha;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.util.Pair;
+import org.pathirage.thulitha.utils.SizeUtility;
 import org.pathirage.thulitha.workloads.WorkloadGenerator;
 import org.pathirage.thulitha.workloads.WorkloadGeneratorConfig;
 import org.slf4j.Logger;
@@ -85,7 +88,68 @@ public class Evaluator {
       }
 
       log.info("Execution times: " + Arrays.toString(executionTimes.entrySet().toArray()));
+    } else if (evaluation.equals("bl")) {
+      List<CCInstanceType> instanceTypes = getInstanceTypes();
+      Map<String, Pair<Double, Double>> stats = new HashMap<>();
+      for (CCInstanceType t : instanceTypes) {
+        for (int p = 0; p < 3; p++) {
+          for (int r = 500; r < upperBound; r += 400) {
+            stats.put(String.format("%s-%s-%s", t, p, r), getWorkloadDistributionStats(t, r, p));
+          }
+        }
+      }
+
+      log.info("Balancing stats: " + Arrays.toString(stats.entrySet().toArray()));
     }
+  }
+
+  private Pair<Double, Double> getWorkloadDistributionStats(CCInstanceType instanceType, int replicaCount, int planner) {
+    List<Replica> replicas = getReplicas(replicaCount);
+
+    if (planner == 0) {
+      BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, getVolumeType(instanceType), true, startWithLowerBound);
+      List<Broker> solution = capacityPlanner.solve();
+      DescriptiveStatistics statistics = new DescriptiveStatistics();
+
+      SizeUtility.updateBrokerSize(solution);
+      for (Broker b : solution) {
+        statistics.addValue(b.getSize());
+      }
+
+      return new Pair<Double, Double>(statistics.getMean(), statistics.getStandardDeviation());
+    } else if (planner == 1) {
+      List<Replica> replicasForBFDCP = new ArrayList<>(replicas);
+      BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicasForBFDCP, instanceType, getVolumeType(instanceType), true, startWithLowerBound);
+      int brokerCount = capacityPlanner.solve().size();
+
+      RandomCapacityPlanner randomCP = new RandomCapacityPlanner(replicas, instanceType, getVolumeType(instanceType), true, brokerCount);
+      List<Broker> solution = randomCP.solve();
+
+      SizeUtility.updateBrokerSize(solution);
+      DescriptiveStatistics statistics = new DescriptiveStatistics();
+      for (Broker b : solution) {
+        statistics.addValue(b.getSize());
+      }
+
+      return new Pair<Double, Double>(statistics.getMean(), statistics.getStandardDeviation());
+    } else if (planner == 2) {
+      List<Replica> replicasForBFDCP = new ArrayList<>(replicas);
+      BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicasForBFDCP, instanceType, getVolumeType(instanceType), true, startWithLowerBound);
+      int brokerCount = capacityPlanner.solve().size();
+
+      RandomBalancingCapacityPlanner randomCP = new RandomBalancingCapacityPlanner(replicas, instanceType, getVolumeType(instanceType), true, brokerCount);
+      List<Broker> solution = randomCP.solve();
+
+      SizeUtility.updateBrokerSize(solution);
+      DescriptiveStatistics statistics = new DescriptiveStatistics();
+      for (Broker b : solution) {
+        statistics.addValue(b.getSize());
+      }
+
+      return new Pair<Double, Double>(statistics.getMean(), statistics.getStandardDeviation());
+    }
+
+    throw new RuntimeException("Unsupported planner type " + planner);
   }
 
   private double calculateAverage(List<Double> values) {

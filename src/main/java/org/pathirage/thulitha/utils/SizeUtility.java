@@ -110,9 +110,9 @@ public class SizeUtility {
 
     for (Broker b : brokers) {
       for (int d = 0; d < dimensions; d++) {
-        if (b.getRemainingCapacity(d) < 0) {
-          throw new RuntimeException(String.format("Remaining capacity over dimension %s cannot be negative.", d));
-        }
+//        if (b.getRemainingCapacity(d) < 0) {
+//          throw new RuntimeException(String.format("Remaining capacity over dimension %s cannot be negative.", d));
+//        }
         totalRemaining[d] += b.getRemainingCapacity(d);
       }
     }
