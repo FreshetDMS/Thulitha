@@ -90,17 +90,21 @@ public class Evaluator {
       log.info("Execution times: " + Arrays.toString(executionTimes.entrySet().toArray()));
     } else if (evaluation.equals("bl")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
-      Map<String, Stat> stats = new HashMap<>();
-      for (CCInstanceType t : instanceTypes) {
-        for (int p = 0; p < 3; p++) {
-          for (int r = 500; r < upperBound; r += 400) {
-            stats.put(String.format("%s-%s-%s", t, p, r), getWorkloadDistributionStats(t, r, p));
-          }
+      Map<Integer, Map<CCInstanceType, Stat>> stats = new HashMap<>();
+      for (int p = 0; p < 3; p++) {
+        Map<CCInstanceType, Stat> typeStat = new HashMap<>();
+        for (CCInstanceType t : instanceTypes) {
+          typeStat.put(t, getWorkloadDistributionStats(t, upperBound, p));
         }
+        stats.put(p, typeStat);
       }
 
-      for (Map.Entry<String, Stat> stat : stats.entrySet()) {
-        log.info(stat.toString());
+      for (Map.Entry<Integer, Map<CCInstanceType, Stat>> stat : stats.entrySet()) {
+        System.out.println("Planner: " + stat.getKey());
+        System.out.println("Instance Type\t\tMean Size\t\tStd Dev\t\tBrokers\t\tNeg. Remaining");
+        for (Map.Entry<CCInstanceType, Stat> entry : stat.getValue().entrySet()) {
+          System.out.println(String.format("%s\t\t%s\t\t%s\t\t%s\t\t%s", entry.getKey(), entry.getValue().mean, entry.getValue().std, entry.getValue().brokers,entry.getValue().minusRemaining));
+        }
       }
     }
   }
