@@ -139,8 +139,14 @@ public class Broker implements Comparable<Broker> {
     }
 
     for (int i = 0; i < replica.getDimensionCount(); i++) {
-      if (replica.getDimension(i) > remainingCapacity[i]) {
-        return false;
+      if (i != 2) {
+        if (replica.getDimension(i) > remainingCapacity[i]) {
+          return false;
+        }
+      } else {
+        if (((replica.getDimension(i) * MBS_TO_KB) / iopSizeKB) > remainingCapacity[i]) {
+          return false;
+        }
       }
     }
     return true;

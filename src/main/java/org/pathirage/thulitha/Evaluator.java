@@ -31,19 +31,19 @@ public class Evaluator {
   private static final Logger log = LoggerFactory.getLogger(Evaluator.class);
 
   @Parameter(names = {"-e", "--evaluation"}, required = true)
-  private String evaluation;
+  String evaluation;
 
   @Parameter(names = {"-T", "--instance-types"})
-  private String instanceTypes;
+  String instanceTypes;
 
   @Parameter(names = {"-lb"})
-  private boolean startWithLowerBound = false;
+  boolean startWithLowerBound = false;
 
   @Parameter(names = {"-u", "--upper-bound"})
-  private int upperBound = 2000;
+  int upperBound = 2000;
 
   @Parameter(names = {"-i", "--iterations"})
-  private int iterations = 5;
+  int iterations = 5;
 
   public static void main(String[] args) {
     Evaluator evaluator = new Evaluator();
@@ -90,7 +90,7 @@ public class Evaluator {
       log.info("Execution times: " + Arrays.toString(executionTimes.entrySet().toArray()));
     } else if (evaluation.equals("bl")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
-      Map<String, Pair<Double, Double>> stats = new HashMap<>();
+      Map<String, Stat> stats = new HashMap<>();
       for (CCInstanceType t : instanceTypes) {
         for (int p = 0; p < 3; p++) {
           for (int r = 500; r < upperBound; r += 400) {
@@ -99,24 +99,57 @@ public class Evaluator {
         }
       }
 
-      log.info("Balancing stats: " + Arrays.toString(stats.entrySet().toArray()));
+      for (Map.Entry<String, Stat> stat : stats.entrySet()) {
+        log.info(stat.toString());
+      }
     }
   }
 
-  private Pair<Double, Double> getWorkloadDistributionStats(CCInstanceType instanceType, int replicaCount, int planner) {
+  private Stat computeDistributionStats(List<Broker> brokers, int planner) {
+    DescriptiveStatistics statistics = new DescriptiveStatistics();
+    List<Replica> replicas = new ArrayList<>();
+
+    for (Broker b : brokers) {
+      replicas.addAll(b.getReplicas());
+    }
+
+    long[] totalSizeOfItems = SizeUtility.computeTotalSizeOfItems(replicas);
+
+    for (Broker b : brokers) {
+      double totalSizeOfAssignedItems = 0;
+      for (Replica r : b.getReplicas()) {
+        for (int d = 0; d < totalSizeOfItems.length; d++) {
+          totalSizeOfAssignedItems += (double) r.getDimension(d) / totalSizeOfItems[d];
+        }
+      }
+
+      statistics.addValue(totalSizeOfAssignedItems);
+    }
+
+    int mr = 0;
+
+    for (Broker b : brokers) {
+      for (int d = 0; d < totalSizeOfItems.length; d++) {
+        if (b.getRemainingCapacity(d) < 0) {
+          if (planner == 0) {
+            log.warn("Dimension " + d + " capacity minus.");
+          }
+          mr++;
+        }
+      }
+    }
+
+
+    return new Stat(statistics.getMean(), statistics.getStandardDeviation(), statistics.getMin(), statistics.getMax(), mr,replicas.size(), brokers.size());
+  }
+
+  private Stat getWorkloadDistributionStats(CCInstanceType instanceType, int replicaCount, int planner) {
     List<Replica> replicas = getReplicas(replicaCount);
 
     if (planner == 0) {
       BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, getVolumeType(instanceType), true, startWithLowerBound);
       List<Broker> solution = capacityPlanner.solve();
-      DescriptiveStatistics statistics = new DescriptiveStatistics();
-
-      SizeUtility.updateBrokerSize(solution);
-      for (Broker b : solution) {
-        statistics.addValue(b.getSize());
-      }
-
-      return new Pair<Double, Double>(statistics.getMean(), statistics.getStandardDeviation());
+      return computeDistributionStats(solution, planner);
     } else if (planner == 1) {
       List<Replica> replicasForBFDCP = new ArrayList<>(replicas);
       BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicasForBFDCP, instanceType, getVolumeType(instanceType), true, startWithLowerBound);
@@ -125,13 +158,7 @@ public class Evaluator {
       RandomCapacityPlanner randomCP = new RandomCapacityPlanner(replicas, instanceType, getVolumeType(instanceType), true, brokerCount);
       List<Broker> solution = randomCP.solve();
 
-      SizeUtility.updateBrokerSize(solution);
-      DescriptiveStatistics statistics = new DescriptiveStatistics();
-      for (Broker b : solution) {
-        statistics.addValue(b.getSize());
-      }
-
-      return new Pair<Double, Double>(statistics.getMean(), statistics.getStandardDeviation());
+      return computeDistributionStats(solution, planner);
     } else if (planner == 2) {
       List<Replica> replicasForBFDCP = new ArrayList<>(replicas);
       BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicasForBFDCP, instanceType, getVolumeType(instanceType), true, startWithLowerBound);
@@ -140,13 +167,7 @@ public class Evaluator {
       RandomBalancingCapacityPlanner randomCP = new RandomBalancingCapacityPlanner(replicas, instanceType, getVolumeType(instanceType), true, brokerCount);
       List<Broker> solution = randomCP.solve();
 
-      SizeUtility.updateBrokerSize(solution);
-      DescriptiveStatistics statistics = new DescriptiveStatistics();
-      for (Broker b : solution) {
-        statistics.addValue(b.getSize());
-      }
-
-      return new Pair<Double, Double>(statistics.getMean(), statistics.getStandardDeviation());
+      return computeDistributionStats(solution, planner);
     }
 
     throw new RuntimeException("Unsupported planner type " + planner);
