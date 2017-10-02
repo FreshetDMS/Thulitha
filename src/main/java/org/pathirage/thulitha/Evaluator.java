@@ -91,10 +91,11 @@ public class Evaluator {
     } else if (evaluation.equals("bl")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
       Map<Integer, Map<CCInstanceType, Stat>> stats = new HashMap<>();
+      List<Replica> replicas = new WorkloadGenerator(new WorkloadGeneratorConfig(null)).run(upperBound);
       for (int p = 0; p < 3; p++) {
         Map<CCInstanceType, Stat> typeStat = new HashMap<>();
         for (CCInstanceType t : instanceTypes) {
-          typeStat.put(t, getWorkloadDistributionStats(t, upperBound, p));
+          typeStat.put(t, getWorkloadDistributionStats(t, new ArrayList<>(replicas), p));
         }
         stats.put(p, typeStat);
       }
@@ -147,8 +148,7 @@ public class Evaluator {
     return new Stat(statistics.getMean(), statistics.getStandardDeviation(), statistics.getMin(), statistics.getMax(), mr,replicas.size(), brokers.size());
   }
 
-  private Stat getWorkloadDistributionStats(CCInstanceType instanceType, int replicaCount, int planner) {
-    List<Replica> replicas = getReplicas(replicaCount);
+  private Stat getWorkloadDistributionStats(CCInstanceType instanceType, List<Replica> replicas, int planner) {
 
     if (planner == 0) {
       BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, getVolumeType(instanceType), true, startWithLowerBound);
