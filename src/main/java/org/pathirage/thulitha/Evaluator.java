@@ -75,19 +75,22 @@ public class Evaluator {
 
     } else if (evaluation.equals("et")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
-      Map<String, Double> executionTimes = new HashMap<>();
-      for (CCInstanceType t : instanceTypes) {
-        for (int r = 500; r < upperBound; r += 400) {
+      Map<Integer, Map<CCInstanceType, Double>> executionTimes = new HashMap<>();
+      for (int r = 500; r < upperBound; r += 400) {
+        List<Replica> replicas = new WorkloadGenerator(new WorkloadGeneratorConfig(null)).run(r);
+        Map<CCInstanceType, Double> execTimeForInstanceType = new HashMap<>();
+        for (CCInstanceType t : instanceTypes) {
           List<Double> executionTime = new ArrayList<>();
           for (int i = 0; i < iterations; i++) {
-            executionTime.add(measureExecutionTime(t, r));
+            executionTime.add(measureExecutionTime(t, new ArrayList<>(replicas)));
           }
 
-          executionTimes.put(String.format("%s-%s", t, r), calculateAverage(executionTime));
+          execTimeForInstanceType.put(t, calculateAverage(executionTime));
         }
+        executionTimes.put(r, execTimeForInstanceType);
       }
 
-      log.info("Execution times: " + Arrays.toString(executionTimes.entrySet().toArray()));
+
     } else if (evaluation.equals("bl")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
       Map<Integer, Map<CCInstanceType, Stat>> stats = new HashMap<>();
@@ -104,7 +107,7 @@ public class Evaluator {
         System.out.println("Planner: " + stat.getKey());
         System.out.println("Instance Type\t\tMean Size\t\tStd Dev\t\tBrokers\t\tNeg. Remaining");
         for (Map.Entry<CCInstanceType, Stat> entry : stat.getValue().entrySet()) {
-          System.out.println(String.format("%s\t\t%s\t\t%s\t\t%s\t\t%s", entry.getKey(), entry.getValue().mean, entry.getValue().std, entry.getValue().brokers,entry.getValue().minusRemaining));
+          System.out.println(String.format("%s\t\t%s\t\t%s\t\t%s\t\t%s", entry.getKey(), entry.getValue().mean, entry.getValue().std, entry.getValue().brokers, entry.getValue().minusRemaining));
         }
       }
     }
@@ -145,7 +148,7 @@ public class Evaluator {
     }
 
 
-    return new Stat(statistics.getMean(), statistics.getStandardDeviation(), statistics.getMin(), statistics.getMax(), mr,replicas.size(), brokers.size());
+    return new Stat(statistics.getMean(), statistics.getStandardDeviation(), statistics.getMin(), statistics.getMax(), mr, replicas.size(), brokers.size());
   }
 
   private Stat getWorkloadDistributionStats(CCInstanceType instanceType, List<Replica> replicas, int planner) {
@@ -188,9 +191,7 @@ public class Evaluator {
     return sum;
   }
 
-  public double measureExecutionTime(CCInstanceType instanceType, int replicaCount) {
-    List<Replica> replicas = getReplicas(replicaCount);
-
+  public double measureExecutionTime(CCInstanceType instanceType, List<Replica> replicas) {
     StorageVolumeType storageVolumeType = getVolumeType(instanceType);
 
     BFDCapacityPlanner capacityPlanner = new BFDCapacityPlanner(replicas, instanceType, storageVolumeType, true, startWithLowerBound);
