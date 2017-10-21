@@ -15,6 +15,8 @@
  */
 package org.pathirage.thulitha;
 
+import java.util.Arrays;
+
 /**
  * Requirement dimensions
  *  - ram : 0
@@ -116,5 +118,17 @@ public class Replica implements Comparable<Replica> {
   @Override
   public int compareTo(Replica o) {
     return Double.compare(this.size, o.size);
+  }
+
+  @Override
+  public String toString() {
+    return "Replica{" +
+        "topic='" + topic + '\'' +
+        ", partition=" + partition +
+        ", id=" + id +
+        ", requirements=" + Arrays.toString(requirements) +
+        ", readPercentage=" + readPercentage +
+        ", size=" + size +
+        '}';
   }
 }

@@ -15,6 +15,9 @@
  */
 package org.pathirage.thulitha;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Dimensions
  *  - size : 0
@@ -34,6 +37,7 @@ public class StorageVolume implements Comparable<StorageVolume>{
   private long[] totalItemSize = new long[2];
   private double size = 0;
   private final boolean dumb;
+  private final List<Replica> replicas = new ArrayList<>();
 
   public StorageVolume(String brokerId, StorageVolumeType type, CCInstanceType instanceType, int iopSizeKB) {
     this(brokerId, type, instanceType, iopSizeKB, false);
@@ -75,10 +79,16 @@ public class StorageVolume implements Comparable<StorageVolume>{
 
       capacity[1] = effectiveIOPS;
 
+      replicas.add(replica);
+
       return true;
     }
 
     return false;
+  }
+
+  public List<Replica> getReplicas() {
+    return replicas;
   }
 
   public boolean isFeasible(Replica replica) {

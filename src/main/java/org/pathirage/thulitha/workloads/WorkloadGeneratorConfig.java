@@ -61,6 +61,9 @@ public class WorkloadGeneratorConfig {
 
   public Pair<Integer, Integer> getNextReplicationFactorAndPartitionCount() {
     int replicationFactor = random.nextInt(maxReplicationFactor);
+    if (maxReplicationFactor == 1 || replicationFactor == 0) {
+      replicationFactor = 1;
+    }
     int partitionCount = perTopicPartitionCountMin + random.nextInt(perTopicPartitionCountMax - perTopicPartitionCountMin);
 
     return new Pair<Integer, Integer>(replicationFactor, partitionCount);
@@ -83,6 +86,10 @@ public class WorkloadGeneratorConfig {
   }
 
   public Pair<Integer, Integer[]> getNextReplayConfiguration() {
+    if (maxReplays == 0) {
+      return new Pair<Integer, Integer[]>(0, null);
+    }
+
     int replays = minReplays + random.nextInt(maxReplays);
 
     Integer[] replayRates = new Integer[replays];
