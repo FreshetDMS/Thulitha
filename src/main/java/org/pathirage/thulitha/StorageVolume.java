@@ -20,10 +20,10 @@ import java.util.List;
 
 /**
  * Dimensions
- *  - size : 0
- *  - iops : 1
+ * - size : 0
+ * - iops : 1
  */
-public class StorageVolume implements Comparable<StorageVolume>{
+public class StorageVolume implements Comparable<StorageVolume> {
   private final String brokerId;
   private final StorageVolumeType type;
   private final CCInstanceType instanceType;
@@ -71,7 +71,7 @@ public class StorageVolume implements Comparable<StorageVolume>{
       }
 
       totalItemSize[0] += replica.getDimension(1);
-      totalItemSize[1] += Math.ceil(new Float(replica.getDimension(2)) / iopSizeKB); // TODO: figure out a  way to get rid of BW to IOPS conversion
+      totalItemSize[1] += Math.ceil((replica.getDimension(2) * 1024.0) / iopSizeKB); // TODO: figure out a  way to get rid of BW to IOPS conversion
 
       int effectiveIOPS = computeEffectiveIOPS();
       remaining[0] = type.getSizeMB() - totalItemSize[0];
@@ -92,7 +92,7 @@ public class StorageVolume implements Comparable<StorageVolume>{
   }
 
   public boolean isFeasible(Replica replica) {
-    return dumb || replica.getDimension(1) < remaining[0] && replica.getDimension(2) < remaining[1];
+    return dumb || replica.getDimension(1) < remaining[0] && ((replica.getDimension(2) * 1024) / iopSizeKB) < remaining[1];
   }
 
   private int computeEffectiveIOPS() {
@@ -108,6 +108,10 @@ public class StorageVolume implements Comparable<StorageVolume>{
     return type.effectiveIOPS(iopSizeKB, instanceType.getStorageBWMB(),
         new Float(leaderWritePercentage * 100).intValue(), numberOfLeaders,
         numberOfLogs - numberOfLeaders);
+  }
+
+  public int effectiveIOPS() {
+    return computeEffectiveIOPS();
   }
 
   public int effectiveThroughput() {

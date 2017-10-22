@@ -45,14 +45,19 @@ public class StoragePerfModelEvaluator {
 
   void printAssignment(Pair<List<Replica>, Integer> result, StorageVolumeType storageVolumeType) {
     System.out.println("Storage Volume Type: " + storageVolumeType);
-    System.out.println("Effective Throughput: " + result.getSecond());
+    System.out.println("Effective IOPS: " + result.getSecond());
+    System.out.println("Size: " + storageVolumeType.getSizeMB());
     System.out.println("Num Replicas: " + result.getFirst().size());
 
     int totlaIOPS = 0;
+    int totalSize = 0;
     for (Replica r : result.getFirst()) {
-      totlaIOPS += r.getDimension(2);
+      totlaIOPS += ((r.getDimension(2) * 1024.0) / 128);
+      totalSize += r.getDimension(1);
     }
+
     System.out.println("Total IOPS: " + totlaIOPS);
+    System.out.println("Total Size: " + totalSize);
     for (Replica r : result.getFirst()) {
       System.out.println(r.toString());
     }
@@ -78,16 +83,18 @@ public class StoragePerfModelEvaluator {
       }
     }
 
-    return new Pair<List<Replica>, Integer>(sv.getReplicas(), sv.effectiveThroughput());
+    return new Pair<List<Replica>, Integer>(sv.getReplicas(), sv.effectiveIOPS());
   }
 
   List<Replica> getWriteOnlyWorkload() {
     WorkloadGeneratorConfig workloadGeneratorConfig = new WorkloadGeneratorConfig(null);
     workloadGeneratorConfig.setMaxReplays(0);
+    workloadGeneratorConfig.setMaxRetentionHours(2);
+    workloadGeneratorConfig.setMinRetentionHours(1);
 
     List<Replica> replicas = new WorkloadGenerator(workloadGeneratorConfig).run(500);
     Collections.shuffle(replicas);
-    return replicas.subList(0, 50);
+    return replicas.subList(0, 300);
   }
 
   List<Replica> getReadWriteWorkload() {
@@ -96,7 +103,7 @@ public class StoragePerfModelEvaluator {
 
     List<Replica> replicas = new WorkloadGenerator(workloadGeneratorConfig).run(500);
     Collections.shuffle(replicas);
-    return replicas.subList(0, 50);
+    return replicas.subList(0, 300);
   }
 
   public static void main(String[] args) {
