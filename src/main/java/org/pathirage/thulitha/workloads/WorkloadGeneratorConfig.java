@@ -42,6 +42,7 @@ public class WorkloadGeneratorConfig {
   private int maxConsumerLag = 120;
   private int previousRetentionPeriod = -1;
   private boolean startWithLowestPossible = false;
+  private int readPercentage = 0;
 
   private final Config config;
   private final Random random = new Random(System.currentTimeMillis());
@@ -53,6 +54,18 @@ public class WorkloadGeneratorConfig {
 
   private void initFromConfig() {
     // Initialize this from config object.
+  }
+
+  public int getReadPercentage() {
+    return readPercentage;
+  }
+
+  public void setReadPercentage(int readPercentage) {
+    this.readPercentage = readPercentage;
+  }
+
+  public int getMaxReplays() {
+    return maxReplays;
   }
 
   public boolean isAllocateReadCapacityForFollowers() {

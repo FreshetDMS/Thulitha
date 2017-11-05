@@ -60,15 +60,25 @@ public class Topic {
     int readPercentage = (int) Math.ceil(new Float(perPartitionReplayRateMB) / storageBWRequirement);
     int networkInRequirement = perPartitionProduceRateMB;
     int networkOutRequirement = (numConsumers + (replicationFactor - 1)) * perPartitionProduceRateMB + perPartitionReplayRateMB;
-
+    int[] perPartitionReplayRates = null;
+    if (numReplays > 0) {
+      perPartitionReplayRates = new int[numReplays];
+      for (int i = 0; i < numReplays; i++) {
+        double replayPerPartition = replayRates[i]/(double)partitions;
+        if (replayPerPartition < 0 ){
+          System.out.println("Negative replay rate: " + replayRates[i] + " partitions: " + partitions + " produce rate: " + produceRate/partitions);
+        }
+        perPartitionReplayRates[i] = (int)replayPerPartition;
+      }
+    }
     for (int p = 0; p < partitions; p++) {
       replicas.add(new Replica(name, p, 0, perPartitionMemRequirement, storageRequirement, storageBWRequirement,
-          networkInRequirement, networkOutRequirement, readPercentage));
+          networkInRequirement, networkOutRequirement, readPercentage, avgMessageSizeBytes, produceRate / partitions, perPartitionReplayRates));
       for (int r = 1; r < replicationFactor; r++) {
         replicas.add(new Replica(name, p, r, perPartitionMemRequirement, storageRequirement,
             readCapacityForFollowers ? storageBWRequirement : perPartitionProduceRateMB, networkInRequirement,
             readCapacityForFollowers ? networkOutRequirement : 0,
-            readCapacityForFollowers ? readPercentage : 0));
+            readCapacityForFollowers ? readPercentage : 0, avgMessageSizeBytes, produceRate /partitions, perPartitionReplayRates));
       }
     }
 

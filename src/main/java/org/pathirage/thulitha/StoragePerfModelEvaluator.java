@@ -21,6 +21,12 @@ public class StoragePerfModelEvaluator {
   @Parameter(names = {"-rw"})
   boolean readWriteWorkload = false;
 
+  int maxMessageSize = 500;
+
+  int minMessageSize = 300;
+
+  int readPercentage = 0;
+
   void run() {
     if (!storageType.toUpperCase().equals("ST1") && !storageType.toUpperCase().equals("D2")) {
       throw new RuntimeException("Unknown storage type " + storageType);
@@ -29,9 +35,9 @@ public class StoragePerfModelEvaluator {
     List<Replica> replicas;
 
     if (readWriteWorkload) {
-      replicas = getReadWriteWorkload();
+      replicas = getReadWriteWorkload(minMessageSize, maxMessageSize, readPercentage);
     } else {
-      replicas = getWriteOnlyWorkload();
+      replicas = getWriteOnlyWorkload(minMessageSize, maxMessageSize);
     }
 
     if (storageType.toUpperCase().equals("ST1")) {
@@ -86,20 +92,25 @@ public class StoragePerfModelEvaluator {
     return new Pair<List<Replica>, Integer>(sv.getReplicas(), sv.effectiveIOPS());
   }
 
-  List<Replica> getWriteOnlyWorkload() {
+  List<Replica> getWriteOnlyWorkload(int minMessageSize, int maxMessageSize) {
     WorkloadGeneratorConfig workloadGeneratorConfig = new WorkloadGeneratorConfig(null);
     workloadGeneratorConfig.setMaxReplays(0);
     workloadGeneratorConfig.setMaxRetentionHours(2);
     workloadGeneratorConfig.setMinRetentionHours(1);
+    workloadGeneratorConfig.setMinMessageSize(minMessageSize);
+    workloadGeneratorConfig.setMaxMessageSize(maxMessageSize);
 
     List<Replica> replicas = new WorkloadGenerator(workloadGeneratorConfig).run(500);
     Collections.shuffle(replicas);
     return replicas.subList(0, 300);
   }
 
-  List<Replica> getReadWriteWorkload() {
+  List<Replica> getReadWriteWorkload(int minMessageSize, int maxMessageSize, int readPercentage) {
     WorkloadGeneratorConfig workloadGeneratorConfig = new WorkloadGeneratorConfig(null);
-    workloadGeneratorConfig.setMaxReplays(3);
+    workloadGeneratorConfig.setMaxReplays(-1);
+    workloadGeneratorConfig.setMinMessageSize(minMessageSize);
+    workloadGeneratorConfig.setMaxMessageSize(maxMessageSize);
+    workloadGeneratorConfig.setReadPercentage(readPercentage);
 
     List<Replica> replicas = new WorkloadGenerator(workloadGeneratorConfig).run(500);
     Collections.shuffle(replicas);

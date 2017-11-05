@@ -7,7 +7,7 @@ public class StoragePerfModelEvaluatorTest {
   @Test
   public void testWriteOnlyWorkload() {
     StoragePerfModelEvaluator storagePerfModelEvaluator = new StoragePerfModelEvaluator();
-    for (Replica r : storagePerfModelEvaluator.getWriteOnlyWorkload()) {
+    for (Replica r : storagePerfModelEvaluator.getWriteOnlyWorkload(300, 500)) {
       System.out.println(r);
     }
   }
@@ -15,8 +15,9 @@ public class StoragePerfModelEvaluatorTest {
   @Test
   public void testAll() {
     StoragePerfModelEvaluator storagePerfModelEvaluator = new StoragePerfModelEvaluator();
-    storagePerfModelEvaluator.readWriteWorkload = false;
+    storagePerfModelEvaluator.readWriteWorkload = true;
     storagePerfModelEvaluator.storageType= "ST1";
+    storagePerfModelEvaluator.readPercentage = 30;
     storagePerfModelEvaluator.run();
   }
 }

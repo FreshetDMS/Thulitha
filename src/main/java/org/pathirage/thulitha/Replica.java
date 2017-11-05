@@ -32,13 +32,21 @@ public class Replica implements Comparable<Replica> {
   private final long[] requirements;
   private final int readPercentage;
   private double size = -1;
+  private final int avgMessageSize;
+  private final int produceRate;
+  private final int[] replayRates;
 
-  public Replica(String topic, int partition, int id, long ramRequirement, long storageRequirement, long storageBandwidthRequirement, long networkInRequirement, long networkOutRequirement, int readPercentage) {
+  public Replica(String topic, int partition, int id, long ramRequirement, long storageRequirement,
+                 long storageBandwidthRequirement, long networkInRequirement, long networkOutRequirement,
+                 int readPercentage, int avgMessageSize, int produceRate, int[] replayRates) {
     this.topic = topic;
     this.partition = partition;
     this.id = id;
     this.requirements = new long[]{ramRequirement, storageRequirement, storageBandwidthRequirement, networkInRequirement, networkOutRequirement};
     this.readPercentage = readPercentage;
+    this.avgMessageSize = avgMessageSize;
+    this.produceRate = produceRate;
+    this.replayRates = replayRates;
 
   }
 
@@ -129,6 +137,9 @@ public class Replica implements Comparable<Replica> {
         ", requirements=" + Arrays.toString(requirements) +
         ", readPercentage=" + readPercentage +
         ", size=" + size +
+        ", avgMessageSize=" + avgMessageSize +
+        ", produceRate=" + produceRate +
+        ", replays=" + Arrays.toString(replayRates) +
         '}';
   }
 }

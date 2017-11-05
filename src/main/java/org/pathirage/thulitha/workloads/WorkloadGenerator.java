@@ -38,6 +38,16 @@ public class WorkloadGenerator {
     this.config = config;
   }
 
+  private Pair<Integer, Integer[]> getReplays(int replayRate, int replayConsumers) {
+    Integer[] replays = new Integer[replayConsumers];
+    int perConsumerReplayRate = replayRate / replayConsumers;
+    for (int r = 0; r < replayConsumers; r++) {
+      replays[r] = perConsumerReplayRate;
+    }
+
+    return new Pair<Integer, Integer[]>(replayConsumers, replays);
+  }
+
   public List<Replica> run(int replicaCount) {
     int generated = 0;
     int t = 0;
@@ -58,13 +68,28 @@ public class WorkloadGenerator {
 
       int publishRateMb = config.getNextPerPartitionPublishRate();
       int averageMessageSize = config.getNextAverageMessageSize();
-      int publishRate = (int)Math.ceil(((double)publishRateMb * 1024 * 1024) / averageMessageSize) * replicationFactorAndPartitionCount.getSecond();
+      int publishRate = (int) Math.ceil(((double) publishRateMb * 1024 * 1024) / averageMessageSize) * replicationFactorAndPartitionCount.getSecond();
 
-      Pair<Integer, Integer[]> replays = config.getNextReplayConfiguration();
+      Pair<Integer, Integer[]> replays = null;
+      if (config.getMaxReplays() <= 0 && config.getReadPercentage() > 0) {
+        double replayRate = publishRate * (config.getReadPercentage() / 100.0);
+
+        System.out.println("Replay rate: " + replayRate + " publish rate: " + publishRate);
+
+        replays = new Pair<Integer, Integer[]>(1, new Integer[]{(int) replayRate});
+      } else {
+        replays = config.getNextReplayConfiguration();
+      }
       int[] replayRates = new int[replays.getFirst()];
 
-      for (int j = 0; j < replays.getFirst(); j++) {
-        replayRates[j] = replays.getSecond()[j] * publishRate;
+      if (config.getReadPercentage() > 0 && config.getMaxReplays() <= 0) {
+        for (int j = 0; j < replays.getFirst(); j++) {
+          replayRates[j] = replays.getSecond()[j];
+        }
+      } else {
+        for (int j = 0; j < replays.getFirst(); j++) {
+          replayRates[j] = replays.getSecond()[j] * publishRate;
+        }
       }
 
       int consumerCount = config.getNextConsumerCount();
@@ -100,7 +125,7 @@ public class WorkloadGenerator {
 
     System.out.println(Arrays.toString(maxCounts.entrySet().toArray()));
 
-    for(Topic topic : topics) {
+    for (Topic topic : topics) {
       replicas.addAll(topic.getReplicas());
     }
 
