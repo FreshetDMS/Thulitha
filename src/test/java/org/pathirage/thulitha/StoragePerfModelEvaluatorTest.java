@@ -17,7 +17,9 @@ public class StoragePerfModelEvaluatorTest {
     StoragePerfModelEvaluator storagePerfModelEvaluator = new StoragePerfModelEvaluator();
     storagePerfModelEvaluator.readWriteWorkload = true;
     storagePerfModelEvaluator.storageType= "ST1";
-    storagePerfModelEvaluator.readPercentage = 30;
+    storagePerfModelEvaluator.readPercentage = 65;
+    storagePerfModelEvaluator.maxMessageSize = 1000;
+    storagePerfModelEvaluator.minMessageSize = 900;
     storagePerfModelEvaluator.run();
   }
 }

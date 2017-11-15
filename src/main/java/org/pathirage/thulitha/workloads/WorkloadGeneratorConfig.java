@@ -24,7 +24,7 @@ public class WorkloadGeneratorConfig {
   private int maxReplicationFactor = 2;
   private boolean allocateReadCapacityForFollowers = false;
   private int perTopicPartitionCountMin = 50;
-  private int perTopicPartitionCountMax = 150;
+  private int perTopicPartitionCountMax = 100;
   private int minMessageSize = 124;
   private int maxMessageSize = 356;
   private int minRetentionHours = 12;
@@ -33,7 +33,7 @@ public class WorkloadGeneratorConfig {
   private int minConsumers = 1;
   private int maxConsumers = 3;
   private int maxPerPartitionPublishRate = 10;
-  private int minPerPartitionPublishRate = 2;
+  private int minPerPartitionPublishRate = 5;
   private int minReplayFactor = 1;
   private int maxReplayFactor = 3;
   private int maxReplays = 2;

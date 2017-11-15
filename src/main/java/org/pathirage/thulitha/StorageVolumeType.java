@@ -61,12 +61,14 @@ public enum StorageVolumeType {
   }
 
   public int getIOPS(int iopSizeKB, int storageBWMB) {
-    if (this == ST1 || this == ST1STATIC) {
+    if (this == ST1) {
       try {
         return new Double(Math.min(st1Model.classifyInstance(createRegressionRequest(50, 1, 0)), (storageBWMB * 1024.0) / iopSizeKB)).intValue();
       } catch (Exception e) {
         throw new RuntimeException("ST1 prediction failed.", e);
       }
+    } else if (this == ST1STATIC) {
+      return 2000;
     } else if (this == D2HDD || this == D2HDDSTATIC) {
       try {
         return new Double(Math.min(hddModel.classifyInstance(createRegressionRequest(50, 1, 0)), (storageBWMB * 1024.0) / iopSizeKB)).intValue();

@@ -73,9 +73,6 @@ public class WorkloadGenerator {
       Pair<Integer, Integer[]> replays = null;
       if (config.getMaxReplays() <= 0 && config.getReadPercentage() > 0) {
         double replayRate = publishRate * (config.getReadPercentage() / 100.0);
-
-        System.out.println("Replay rate: " + replayRate + " publish rate: " + publishRate);
-
         replays = new Pair<Integer, Integer[]>(1, new Integer[]{(int) replayRate});
       } else {
         replays = config.getNextReplayConfiguration();
