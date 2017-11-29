@@ -1,0 +1,176 @@
+[replays=1, partitions=99, MessageSize=351, PublishRate=7, consumers=2, retention=0]
+21:52:33.415 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:34.540 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:34.556 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:34.556 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:34.582 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:35.617 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:35.621 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:35.621 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:35.639 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:36.535 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:36.538 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:36.538 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:36.549 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:37.560 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:37.564 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:37.564 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:37.579 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:38.399 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:38.403 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:38.403 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:38.429 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:39.257 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:39.261 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:39.261 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:39.285 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:40.139 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:40.142 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:40.143 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:40.166 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:41.024 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:41.028 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:41.029 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:41.055 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:41.937 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:41.940 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:41.940 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+21:52:41.964 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 5048 replicas with initial brokers 5048
+21:52:42.818 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 4712
+21:52:42.821 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:42.821 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 336
+[replays=1, partitions=99, MessageSize=351, PublishRate=7, consumers=2, retention=0]
+21:52:42.856 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:52:50.307 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14140
+21:52:50.340 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:50.340 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 919
+21:52:50.370 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:52:58.651 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14140
+21:52:58.683 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:52:58.683 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 919
+21:52:58.714 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:53:06.304 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14140
+21:53:06.335 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:53:06.335 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 919
+21:53:06.367 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:53:15.850 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14140
+21:53:15.885 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:53:15.885 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 919
+21:53:15.917 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:53:24.385 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14140
+21:53:24.416 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:53:24.416 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 919
+21:53:24.495 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:53:32.889 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14131
+21:53:32.921 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:53:32.921 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 928
+21:53:33.006 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:53:40.969 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14131
+21:53:41.002 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:53:41.002 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 928
+21:53:41.090 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:53:48.831 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14131
+21:53:48.863 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:53:48.863 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 928
+21:53:48.932 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:53:57.062 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14131
+21:53:57.094 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:53:57.094 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 928
+21:53:57.163 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 15059 replicas with initial brokers 15059
+21:54:04.438 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 14131
+21:54:04.470 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:54:04.470 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 928
+[replays=1, partitions=99, MessageSize=355, PublishRate=7, consumers=2, retention=0]
+21:54:04.529 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:54:34.630 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23460
+21:54:34.716 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:54:34.717 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1577
+21:54:34.767 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:55:03.282 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23460
+21:55:03.369 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:55:03.369 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1577
+21:55:03.421 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:55:32.855 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23460
+21:55:32.957 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:55:32.958 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1577
+21:55:33.013 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:56:02.754 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23460
+21:56:02.856 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:56:02.856 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1577
+21:56:02.916 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:56:30.828 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23460
+21:56:30.916 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:56:30.916 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1577
+21:56:31.221 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:57:01.794 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23418
+21:57:01.880 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:57:01.880 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1619
+21:57:02.018 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:57:33.426 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23418
+21:57:33.513 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:57:33.513 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1619
+21:57:33.750 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:58:00.091 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23418
+21:58:00.178 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:58:00.178 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1619
+21:58:00.318 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:58:27.694 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23418
+21:58:27.781 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:58:27.781 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1619
+21:58:27.978 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 25037 replicas with initial brokers 25037
+21:58:57.747 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 23418
+21:58:57.834 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:58:57.834 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 1619
+[replays=1, partitions=99, MessageSize=355, PublishRate=7, consumers=2, retention=0]
+21:58:57.916 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+21:59:56.729 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32932
+21:59:56.901 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+21:59:56.901 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2109
+21:59:56.976 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:00:55.253 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32932
+22:00:55.422 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:00:55.422 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2109
+22:00:55.548 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:01:51.459 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32932
+22:01:51.628 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:01:51.628 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2109
+22:01:51.704 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:02:48.963 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32932
+22:02:49.133 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:02:49.133 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2109
+22:02:49.219 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:03:46.594 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32932
+22:03:46.764 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:03:46.764 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2109
+22:03:46.989 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:04:45.459 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32888
+22:04:45.629 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:04:45.629 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2153
+22:04:45.881 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:05:42.552 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32888
+22:05:42.720 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:05:42.721 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2153
+22:05:43.045 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:06:44.299 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32888
+22:06:44.468 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:06:44.468 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2153
+22:06:44.677 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:07:47.549 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32888
+22:07:47.719 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:07:47.719 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2153
+22:07:47.919 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Solving capacity planning for 35041 replicas with initial brokers 35041
+22:08:48.038 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Empty brokers 32888
+22:08:48.206 [main] INFO org.pathirage.thulitha.BFDCapacityPlanner - Number of iterations: 0
+22:08:48.206 [main] DEBUG org.pathirage.thulitha.Evaluator - Solution size: 2153
+Replica Count: 5000
+Instance Type: M4_4X Time: 1010.6milliseconds
+Instance Type: D2_4X Time: 883.4milliseconds
+Replica Count: 15000
+Instance Type: M4_4X Time: 8318.2milliseconds
+Instance Type: D2_4X Time: 8010.4milliseconds
+Replica Count: 25000
+Instance Type: M4_4X Time: 29288.4milliseconds
+Instance Type: D2_4X Time: 29383.6milliseconds
+Replica Count: 35000
+Instance Type: M4_4X Time: 57785.2milliseconds
+Instance Type: D2_4X Time: 60288.4milliseconds
