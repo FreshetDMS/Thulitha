@@ -32,8 +32,8 @@ public class WorkloadGeneratorConfig {
   private boolean clusterWideRetentionConfiguration = true;
   private int minConsumers = 1;
   private int maxConsumers = 3;
-  private int maxPerPartitionPublishRate = 10;
-  private int minPerPartitionPublishRate = 5;
+  private int maxPerPartitionPublishRate = 8;
+  private int minPerPartitionPublishRate = 3;
   private int minReplayFactor = 1;
   private int maxReplayFactor = 3;
   private int maxReplays = 2;

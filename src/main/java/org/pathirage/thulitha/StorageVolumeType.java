@@ -69,7 +69,9 @@ public enum StorageVolumeType {
       }
     } else if (this == ST1STATIC) {
       return 2000;
-    } else if (this == D2HDD || this == D2HDDSTATIC) {
+    } else  if (this == D2HDDSTATIC) {
+      return 1424;
+    } else if (this == D2HDD ) {
       try {
         return new Double(Math.min(hddModel.classifyInstance(createRegressionRequest(50, 1, 0)), (storageBWMB * 1024.0) / iopSizeKB)).intValue();
       } catch (Exception e) {
@@ -93,7 +95,7 @@ public enum StorageVolumeType {
       } catch (Exception e) {
         throw new RuntimeException("HDD prediction failed.", e);
       }
-    } else if (this == ST1STATIC || this == D2HDD) {
+    } else if (this == ST1STATIC || this == D2HDDSTATIC) {
       return getIOPS(iopSizeKB, storageBWMB);
     } else {
       throw new UnsupportedOperationException("Storage volume type " + this + " not supported yet.");

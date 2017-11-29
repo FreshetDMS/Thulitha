@@ -142,4 +142,16 @@ public class Replica implements Comparable<Replica> {
         ", replays=" + Arrays.toString(replayRates) +
         '}';
   }
+
+  public int getAvgMessageSize() {
+    return avgMessageSize;
+  }
+
+  public int getProduceRate() {
+    return produceRate;
+  }
+
+  public int[] getReplayRates() {
+    return replayRates;
+  }
 }

@@ -64,9 +64,53 @@ public class StoragePerfModelEvaluator {
 
     System.out.println("Total IOPS: " + totlaIOPS);
     System.out.println("Total Size: " + totalSize);
+
+
+    int i = 1;
     for (Replica r : result.getFirst()) {
-      System.out.println(r.toString());
+      System.out.println("replayt" + i + " {");
+      System.out.println("\tpartitions = 1");
+      System.out.println("\treplication-factor = 1");
+      System.out.println("\tmsg-size {");
+      System.out.println("\t\tmean = " + r.getAvgMessageSize());
+      System.out.println("\t\tstd = 40");
+      System.out.println("\t\tdist = \"normal\"");
+      System.out.println("\t}");
+      System.out.println("\tproducers {");
+      System.out.println("\t\tproducer-group-" + i + " {");
+      System.out.println("\t\t\tuse-all-partitions = true");
+      System.out.println("\t\t\ttasks = 1");
+      System.out.println("\t\t\trate = " + r.getProduceRate());
+      System.out.println("\t\t}");
+      System.out.println("\t}");
+      System.out.println("}");
+      i++;
     }
+
+    if (readWriteWorkload) {
+      int j = 1;
+      for (Replica r : result.getFirst()) {
+        long msgProcTime = 1000000000 / r.getReplayRates()[0];
+        System.out.println("replayt" + j + " {");
+        System.out.println("\tpartitions = 1");
+        System.out.println("\treplication-factor = 1");
+        System.out.println("\tconsumers {");
+        System.out.println("\t\tconsumer-group-" + j + " {");
+        System.out.println("\t\t\ttasks = 1");
+        System.out.println("\t\t\tdelay= 1");
+        System.out.println("\t\t\tmsg-processing {");
+        System.out.println("\t\t\t\ttype = \"constant\"");
+        System.out.println("\t\t\t\tmean = " + msgProcTime);
+        System.out.println("\t\t\t\tstddev = 20");
+        System.out.println("\t\t\t}");
+        System.out.println("\t\t}");
+        System.out.println("\t}");
+        System.out.println("}");
+        j++;
+      }
+    }
+
+
     System.out.println("");
     System.out.println("");
   }
@@ -100,6 +144,7 @@ public class StoragePerfModelEvaluator {
     workloadGeneratorConfig.setMinMessageSize(minMessageSize);
     workloadGeneratorConfig.setMaxMessageSize(maxMessageSize);
 
+
     List<Replica> replicas = new WorkloadGenerator(workloadGeneratorConfig).run(500);
     Collections.shuffle(replicas);
     return replicas.subList(0, 300);
@@ -108,6 +153,8 @@ public class StoragePerfModelEvaluator {
   List<Replica> getReadWriteWorkload(int minMessageSize, int maxMessageSize, int readPercentage) {
     WorkloadGeneratorConfig workloadGeneratorConfig = new WorkloadGeneratorConfig(null);
     workloadGeneratorConfig.setMaxReplays(-1);
+    workloadGeneratorConfig.setMaxRetentionHours(2);
+    workloadGeneratorConfig.setMinRetentionHours(1);
     workloadGeneratorConfig.setMinMessageSize(minMessageSize);
     workloadGeneratorConfig.setMaxMessageSize(maxMessageSize);
     workloadGeneratorConfig.setReadPercentage(readPercentage);

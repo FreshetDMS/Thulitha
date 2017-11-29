@@ -58,25 +58,29 @@ public class Evaluator {
   public void run() {
     if (evaluation.equals("cr")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
+      Map<CCInstanceType, Double> crs = new HashMap<>();
       for (CCInstanceType t : instanceTypes) {
         List<Double> competitiveRatios = new ArrayList<>();
         for (int p = 0; p < iterations; p++) {
           log.info(String.format("Iteration %s of competitive ration calculation for instance type %s", p, t));
           List<Double> iterationsCompetitiveRatios = new ArrayList<>();
-          for (int i = 500; i < upperBound; i += 400) {
+          for (int i = 500; i < upperBound; i += 500) {
             iterationsCompetitiveRatios.add(computeCompetitiveRatio(t, i));
           }
 
           competitiveRatios.add(Collections.max(iterationsCompetitiveRatios));
         }
 
-        log.info(String.format("Competitive Ratio for instance %s = %s", t, Collections.max(competitiveRatios)));
+        crs.put(t, Collections.max(competitiveRatios));
       }
 
+      for (Map.Entry<CCInstanceType, Double> e : crs.entrySet()) {
+        log.info(String.format("CR for Instance Type %s is %s", e.getKey(), e.getValue()));
+      }
     } else if (evaluation.equals("et")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
       Map<Integer, Map<CCInstanceType, Double>> executionTimes = new HashMap<>();
-      for (int r = 500; r < upperBound; r += 400) {
+      for (int r = 5000; r < upperBound; r += 10000) {
         List<Replica> replicas = new WorkloadGenerator(new WorkloadGeneratorConfig(null)).run(r);
         Map<CCInstanceType, Double> execTimeForInstanceType = new HashMap<>();
         for (CCInstanceType t : instanceTypes) {
@@ -90,6 +94,12 @@ public class Evaluator {
         executionTimes.put(r, execTimeForInstanceType);
       }
 
+      for (Map.Entry<Integer, Map<CCInstanceType, Double>> execTime : executionTimes.entrySet()) {
+        System.out.println("Replica Count: " + execTime.getKey());
+        for (Map.Entry<CCInstanceType, Double> e : execTime.getValue().entrySet()) {
+          System.out.println("Instance Type: " + e.getKey() + " Time: " + e.getValue() + "milliseconds");
+        }
+      }
 
     } else if (evaluation.equals("bl")) {
       List<CCInstanceType> instanceTypes = getInstanceTypes();
